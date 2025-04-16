@@ -44,8 +44,40 @@
     </head>
     <body>
         <!-- Main Menu Container -->
-        <div id="main-menu" class="container z5">
-            <div>This is the main menu</div>
+        <div id="main-menu" class="container z1 nodisplay">
+            
+            <section id="menu-list">
+                This is the main menu
+                <button id="menu-play-button" class="main-menu-button">Play</button>
+                <button id="menu-instructions-button" class="main-menu-button">How to Play</button>
+                <button id="menu-info-button" class="main-menu-button">Knowledge</button>
+                <button id="menu-reset-button" class="main-menu-button">Reset Data</button>
+                <button id="menu-credits-button" class="main-menu-button">Credits</button>
+                <button id="menu-itcn-button" class="main-menu-button">Interconnect</button>
+            </section>
+
+        </div>
+
+        <!-- Pause Menu Container -->
+        <div id="pause-menu" class="container z3"></div>
+
+        <!-- End of Game Container -->
+        <div id="gameover-menu" class="container z3"></div>
+
+        <!-- HUD Container -->
+        <div id="hud-container" class="container z2">
+
+            <!-- Main Character Profile -->
+            <section class="player-box">
+                <div class="stat-box">
+                    <img class="player-image" src="./assets/player-profile.png" alt="Mugshot" />
+                </div>
+                <div id="player-info" class="cols">
+                    <p>Player</p>
+                    <p>Lv. 3</p>
+                </div>
+            </section>
+
         </div>
 
         <!-- Game Contained below -->
