@@ -1,16 +1,18 @@
-import { Start } from './scenes/Start.js';
+import { Game } from './scenes/Game.js';
+import { Preload } from './scenes/Preload.js';
 
 const config = {
     type: Phaser.AUTO,
-    title: 'Overlord Rising',
-    description: '',
+    title: 'Horse Breeding',
+    description: 'Breed horses to create pure colours.',
     parent: 'game-container',
-    width: 1280,
-    height: 720,
-    backgroundColor: '#000000',
-    pixelArt: false,
+    width: 640,
+    height: 320,
+    backgroundColor: '#ADD8E6',
+    pixelArt: true,
     scene: [
-        Start
+        Preload,
+        Game
     ],
     scale: {
         mode: Phaser.Scale.FIT,
