@@ -6,13 +6,12 @@ export class Preload extends Phaser.Scene {
 
     preload() {
 
-        //  Load the images
-        this.load.image('bg', 'assets/bg-mock.png');
+        this.load.image('bg', 'assets/ground.png');
 
-        // Load the palette image
+        this.load.atlas('atlas', 'assets/atlas.png', 'assets/atlas.json');
+
+        // Palette and horse base asset as a spritesheet
         this.load.image('palette', 'assets/colour-pallette.png');
-
-        // Load the horse base asset as a spritesheet
         this.load.spritesheet('horse-base', 'assets/horse-base.png', {
             frameWidth: 60,
             frameHeight: 33
@@ -20,6 +19,7 @@ export class Preload extends Phaser.Scene {
     }
 
     create() {
+        
         // Get the textures from the texture manager
         const paletteTexture = this.textures.get('palette');
         const horseBaseTexture = this.textures.get('horse-base'); // Original spritesheet texture
