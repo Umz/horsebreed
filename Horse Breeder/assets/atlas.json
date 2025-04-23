@@ -1,8 +1,40 @@
 {"frames": [
 
 {
+	"filename": "cart",
+	"frame": {"x":0,"y":97,"w":80,"h":22},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":80,"h":22},
+	"sourceSize": {"w":80,"h":22}
+},
+{
+	"filename": "fence",
+	"frame": {"x":0,"y":175,"w":166,"h":14},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":166,"h":14},
+	"sourceSize": {"w":166,"h":14}
+},
+{
+	"filename": "hay",
+	"frame": {"x":178,"y":0,"w":76,"h":58},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":76,"h":58},
+	"sourceSize": {"w":76,"h":58}
+},
+{
+	"filename": "silo",
+	"frame": {"x":73,"y":0,"w":50,"h":97},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":50,"h":97},
+	"sourceSize": {"w":50,"h":97}
+},
+{
 	"filename": "stable",
-	"frame": {"x":0,"y":0,"w":81,"h":39},
+	"frame": {"x":80,"y":97,"w":81,"h":39},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":81,"h":39},
@@ -10,7 +42,7 @@
 },
 {
 	"filename": "stable_closed",
-	"frame": {"x":81,"y":0,"w":81,"h":39},
+	"frame": {"x":161,"y":97,"w":81,"h":39},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":81,"h":39},
@@ -18,7 +50,7 @@
 },
 {
 	"filename": "stable_left",
-	"frame": {"x":162,"y":0,"w":81,"h":39},
+	"frame": {"x":0,"y":136,"w":81,"h":39},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":81,"h":39},
@@ -26,19 +58,43 @@
 },
 {
 	"filename": "stable_right",
-	"frame": {"x":243,"y":0,"w":81,"h":39},
+	"frame": {"x":81,"y":136,"w":81,"h":39},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":81,"h":39},
 	"sourceSize": {"w":81,"h":39}
+},
+{
+	"filename": "tree1",
+	"frame": {"x":0,"y":0,"w":35,"h":52},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":35,"h":52},
+	"sourceSize": {"w":35,"h":52}
+},
+{
+	"filename": "tree2",
+	"frame": {"x":123,"y":0,"w":55,"h":82},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":55,"h":82},
+	"sourceSize": {"w":55,"h":82}
+},
+{
+	"filename": "trough",
+	"frame": {"x":35,"y":0,"w":38,"h":12},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":38,"h":12},
+	"sourceSize": {"w":38,"h":12}
 }],
 "meta": {
 	"app": "https://www.codeandweb.com/texturepacker",
 	"version": "1.0",
 	"image": "atlas.png",
 	"format": "RGBA8888",
-	"size": {"w":324,"h":39},
+	"size": {"w":254,"h":189},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:38cd6ea0d7394168699d864081e076d3:147a43617f54baa53475365ecd092358:cbce6b53f0f49e0bf15173c25c41f876$"
+	"smartupdate": "$TexturePacker:SmartUpdate:63a140b92657828a75091384a122105e:837ec046305a950622f0330f76f133bf:cbce6b53f0f49e0bf15173c25c41f876$"
 }
 }

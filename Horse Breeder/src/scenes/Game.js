@@ -12,7 +12,7 @@ export class Game extends Phaser.Scene {
 
     create() {
 
-        //  Game stats
+        // Game stats
 
         this.breederName = "Player";
         this.breederLevel = 1;
@@ -22,7 +22,24 @@ export class Game extends Phaser.Scene {
 
         this.spriteGroup = this.add.group({runChildUpdate:true});
 
-        const bg = this.add.image(320, 160, 'bg');
+        // Create the scene
+
+        const sky = this.add.tileSprite(0, 0, this.scale.width, this.scale.height, 'sky').setOrigin(0);
+        const moon = this.add.image(370, 90, 'moon').setAlpha(.4);
+        const mount = this.add.image(-20, 0, 'mountain').setOrigin(0);
+        const ground = this.add.image(320, 160, 'ground');
+
+        // Add other elements
+
+        const silo = this.add.sprite(80, 190, "atlas", "silo").setOrigin(0, 1).setDepth(170);
+        const trough = this.add.sprite(120, 190, "atlas", "trough").setOrigin(0, 1).setDepth(170);
+        const hay = this.add.sprite(220, 186, "atlas", "hay").setOrigin(0, 1).setDepth(170);
+        const cart = this.add.sprite(300, 186, "atlas", "cart").setOrigin(0, 1).setDepth(170);
+        const fence = this.add.sprite(30, 222, "atlas", "fence").setOrigin(0, 1).setDepth(222);
+
+        const tree21 = this.add.sprite(500, 182, "atlas", "tree2").setOrigin(0, 1).setDepth(170);
+        const tree11 = this.add.sprite(540, 186, "atlas", "tree1").setOrigin(0, 1).setDepth(171);
+        const tree12 = this.add.sprite(560, 184, "atlas", "tree1").setOrigin(0, 1).setDepth(170);
 
         // Create the house sprite
         const house = this.add.sprite(20, 190, "atlas", "stable").setOrigin(0, 1).setDepth(175);
@@ -129,10 +146,27 @@ export class Game extends Phaser.Scene {
         const type2 = this.stable[1].level;
         this.stable.length = 0;
 
-        const newMaxLevel = type1 + type2;
-        this.breederLevel = Math.max(this.breederLevel, newMaxLevel);
+        const res = Math.abs(type1 - type2);
+        let breededLv;
 
-        const newType = this.getHorseTypeByLevel(newMaxLevel);
+        // Successful breed for new type
+        if (res === 1) {
+            const higher = Math.max(type1, type2);
+            const newLv = higher + 1;
+            this.breederLevel = Math.max(this.breederLevel, newLv);
+            breededLv = newLv;
+        }
+        else if (type1 === 1 && type2 === 1) {
+            breededLv = 2;
+        }
+        else if (type1 === 9 && type2 === 9) {
+            breededLv = 10;
+        }
+        else {
+            breededLv = Math.max(type1, type2);
+        }
+
+        const newType = this.getHorseTypeByLevel(breededLv);
         this.breedHorse(80, 194, newType);
     }
 

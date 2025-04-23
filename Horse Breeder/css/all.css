@@ -1,6 +1,10 @@
 /* General stylesheet that links to all others */
 @import url('https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap');
 
+#game-container {
+  cursor: url('cursor_hand.png'), grab;
+}
+
 /* Page structure and box layout */
 .container {
     position: absolute;

@@ -6,8 +6,10 @@ export class Preload extends Phaser.Scene {
 
     preload() {
 
-        this.load.image('bg', 'assets/ground.png');
-
+        this.load.image('ground', 'assets/ground.png');
+        this.load.image('moon', 'assets/moon.png');
+        this.load.image('mountain', 'assets/mountain.png');
+        this.load.image('sky', 'assets/sky.png');
         this.load.atlas('atlas', 'assets/atlas.png', 'assets/atlas.json');
 
         // Palette and horse base asset as a spritesheet
