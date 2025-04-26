@@ -1,8 +1,11 @@
 /* General stylesheet that links to all others */
 @import url('https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap');
 
-#game-container {
-  cursor: url('cursor_hand.png'), grab;
+.hand-open {
+    cursor: url('cursor_hand.png'), grab;
+}
+.hand-fist {
+    cursor: url('cursor_fist.png'), grab;
 }
 
 /* Page structure and box layout */
@@ -48,10 +51,39 @@
     top: 2rem;
 
     font-family: "Silkscreen", sans-serif;
+    text-shadow: 1px 1px 0 #000;
 }
 
 img.player-image {
     width: 100%;
     min-width: 64px;
     image-rendering: crisp-edges;
+}
+
+/* Holder for all horse profiles */
+.horse-profile-list {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    width: 20%;
+    height: 50%;
+}
+.horse-profile {
+    display: flex;
+    gap: 1rem;
+    background-color: rgba(0, 0, 0, .3);
+    border-radius: 1rem;
+    padding: 1rem;
+}
+
+.horse-image-holder {
+    background-color: orange;
+    width: 96px;
+    height: 64px;
+}
+.horse-stats {
+}
+.horse-stats p {
+    font-family: "Silkscreen", sans-serif;
+    text-shadow: 1px 1px 0 #000;
 }

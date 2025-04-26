@@ -1,5 +1,6 @@
 import HorseType from '../consts/HorseType.js';
 import { Horse } from '../sprites/Horse.js';
+import { CloudySky } from '../utils/CloudySky.js';
 
 export class Game extends Phaser.Scene {
 
@@ -27,7 +28,7 @@ export class Game extends Phaser.Scene {
         const sky = this.add.tileSprite(0, 0, this.scale.width, this.scale.height, 'sky').setOrigin(0);
         const moon = this.add.image(370, 90, 'moon').setAlpha(.4);
         const mount = this.add.image(-20, 0, 'mountain').setOrigin(0);
-        const ground = this.add.image(320, 160, 'ground');
+        const ground = this.add.image(320, 160, 'ground').setDepth(5);
 
         // Add other elements
 
@@ -51,6 +52,10 @@ export class Game extends Phaser.Scene {
             loop: true
         });
 
+        // Background clouds
+
+        this.cloudManager = new CloudySky(this, ['cloud1', 'cloud2', 'cloud3'], 3000); // Adjust keys and interval
+
         // Create the first horse sprite using the new function
 
         for (let i =0; i<4; i++) {
@@ -62,20 +67,31 @@ export class Game extends Phaser.Scene {
             this.spriteGroup.add(horse);
         }
 
+        //const canvas = this.game.canvas;
+        const canvas = document.getElementById('game-container');
+        canvas.classList.add("hand-open");
+
         // Make the horse draggable and handle the drop event
         this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
             gameObject.setPosition(dragX, dragY);
             gameObject.setVelocityX(0);
             gameObject.setFrame(0);
             gameObject.stop();
+
+            canvas.classList.remove("hand-open");
+            canvas.classList.add("hand-fist");
         });
         this.input.on('dragend', (pointer, gameObject, dropped) => {
             gameObject.play(`horse-color-${gameObject.colNum}-walk`);
             this.handleHorseDrop(gameObject, house);
+            
+            canvas.classList.remove("hand-fist");
+            canvas.classList.add("hand-open");
         });
     }
 
     update() {
+        this.cloudManager.update();
     }
 
     handleHorseDrop(horse, house) {
