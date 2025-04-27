@@ -44,6 +44,7 @@ export class Game extends Phaser.Scene {
 
         // Create the house sprite
         const house = this.add.sprite(20, 190, "atlas", "stable").setOrigin(0, 1).setDepth(175);
+        this.stableSprite = house;
 
         this.time.addEvent({
             delay: 1000,
@@ -184,6 +185,7 @@ export class Game extends Phaser.Scene {
 
         const newType = this.getHorseTypeByLevel(breededLv);
         this.breedHorse(80, 194, newType);
+        this.breedHUD();
     }
 
     breedHorse(x, y, type) {
@@ -191,5 +193,35 @@ export class Game extends Phaser.Scene {
         horse.init(16);
         horse.playWalk();
         this.spriteGroup.add(horse);
+    }
+
+    breedHUD() {
+
+        const container = document.getElementById('breeding-bar-container');
+        const bar = document.getElementById('id-bbar');
+        const fill = document.getElementById('id-bfill');
+
+        container.classList.remove('nodisplay');
+
+        fill.style.width = '0%';
+        const tweenProgress = { value: 0 };
+        this.tweens.add({
+            targets: tweenProgress,
+            value: 100,
+            duration: 7000,
+            ease: 'Linear',
+
+            onUpdate: function (tween) {
+                const currentProgress = tween.getValue(); // Gets the current value between 0 and 100
+                fill.style.width = Math.max(0, Math.min(100, currentProgress)) + '%';
+            },
+
+            onComplete: function (tween) {
+                container.classList.add('nodisplay');
+                fill.style.width = '0%';
+            },
+            onCompleteScope: this,
+            onUpdateScope: this
+        });
     }
 }
