@@ -43,14 +43,98 @@
         <link rel="stylesheet" href="./css/all.css" />
     </head>
     <body>
+
+        <!-- Splash Screen -->
+        <div id="splash-screen" class="container z4"></div>
+
         <!-- Main Menu Container -->
-        <div id="main-menu" class="container z5">
-            <div>This is the main menu</div>
+        <div id="main-menu" class="container z1 nodisplay">
+            
+            <section id="menu-list">
+                This is the main menu
+                <button id="menu-play-button" class="main-menu-button">Play</button>
+                <button id="menu-instructions-button" class="main-menu-button">How to Play</button>
+                <button id="menu-info-button" class="main-menu-button">Knowledge</button>
+                <button id="menu-reset-button" class="main-menu-button">Reset Data</button>
+                <button id="menu-credits-button" class="main-menu-button">Credits</button>
+                <button id="menu-itcn-button" class="main-menu-button">Interconnect</button>
+            </section>
+
+            <section id="credits">
+                <p>Art Resources</p>
+                Farmer: https://opengameart.org/content/farmer
+                Horse: https://opengameart.org/content/animated-horse
+                Clouds: https://justajoke.itch.io/clouds-set-icons
+            </section>
+
+        </div>
+
+        <!-- Pause Menu Container -->
+        <div id="pause-menu" class="container z3"></div>
+
+        <!-- End of Game Container -->
+        <div id="gameover-menu" class="container z3"></div>
+
+        <!-- HUD Container -->
+        <div id="hud-container" class="container z2">
+
+            <!-- Main Character Profile -->
+            <section class="player-box">
+                <div class="stat-box">
+                    <img class="player-image" src="./assets/player-profile.png" alt="Mugshot" />
+                </div>
+                <div id="player-info" class="cols">
+                    <p id="player-name">Player</p>
+                    <p id="player-level">Lv. 3</p>
+                </div>
+            </section>
+
+            <!-- Horses on farm (Max 4) -->
+            <section id="farm-horses" class="horse-profile-list">
+
+                <div id="horse-profile-1" class="horse-profile">
+                    <div class="horse-image-holder">
+                        <canvas id="horse-canvas-1" class="horse-canvas" width=90 height=80>
+                    </div>
+                    <div class="horse-stats">
+                        <p>Red Hare <span class="sex">(M)</span></p>
+                        <p>13% tame</p>
+                        <p class="horse-state">Calm:</p>
+                        <div class="horse-stat-bar">
+                            <div class="horse-stat-fill"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="profile-holder" class="nodisplay">
+                    <img id="horse-head-image" src="./assets/profile-horse.png" />
+                    <img id="horse-palette" src="./assets/colour-pallette.png" />
+                </div>
+
+            </section>
+
+            <!-- Horse breeding bar -->
+            <section id="breeding-bar-container" class="nodisplay">
+                <div id="id-bbar" class="breeding-bar">
+                    <div id="id-bfill" class="breeding-bar-fill glowing-background"></div>
+                </div>
+            </section>
+
         </div>
 
         <!-- Game Contained below -->
         <div id="game-container"></div>
         <script src="./phaser.js"></script>
         <script type="module" src="./src/main.js"></script>
+        <script>
+            //  Profile images for horses
+            var c = document.getElementById("horse-canvas-1");
+            var ctx = c.getContext("2d");
+
+            var palette = document.getElementById("horse-head-image");
+            var img = document.getElementById("horse-head-image");
+            ctx.drawImage(img, 0, 0, 90, 80);
+
+        </script>
     </body>
     </html>

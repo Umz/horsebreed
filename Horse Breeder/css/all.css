@@ -1,15 +1,26 @@
 /* General stylesheet that links to all others */
+@import url('https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap');
 
+.hand-open {
+    cursor: url('cursor_hand.png'), grab;
+}
+.hand-fist {
+    cursor: url('cursor_fist.png'), grab;
+}
 
 /* Page structure and box layout */
 .container {
-    display: block;
     position: absolute;
     width: 100%;
     height: 100%;
     color: #fff;
+    pointer-events: none;
 }
 
+.cols {
+    display: flex;
+    flex-direction: column;
+}
 
 /* z-indexing */
 .z1 { z-index: 1;}
@@ -21,3 +32,118 @@
 .z7 { z-index: 7;}
 .z8 { z-index: 8;}
 .z9 { z-index: 9;}
+
+.nodisplay { display: none;}
+
+/* Stats */
+.stat-box {
+    border: 2px solid brown;
+    outline: 2px solid white;
+}
+
+/* Player profile */
+.player-box {
+    display: flex;
+    gap: 1rem;
+    width: fit-content;
+    position: relative;
+    left: 2rem;
+    top: 2rem;
+
+    font-family: "Silkscreen", sans-serif;
+    text-shadow: 1px 1px 0 #000;
+}
+
+img.player-image {
+    width: 100%;
+    min-width: 72px;
+    image-rendering: crisp-edges;
+}
+
+/* Holder for all horse profiles */
+.horse-profile-list {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    width: 20%;
+    height: 50%;
+}
+.horse-profile {
+    display: flex;
+    gap: 1rem;
+    background-color: rgba(0, 0, 0, .3);
+    border-radius: 1rem;
+    padding: 1rem;
+}
+
+.horse-image-holder {
+    position: relative;
+    background: linear-gradient(yellow, green);
+    border: 2px solid brown;
+    outline: 2px solid white;
+    width: 90px;
+    height: 80px;
+    padding: 0;
+}
+.horse-canvas {
+    image-rendering: pixelated;
+}
+.sex {
+    font-size: .75rem;
+    font-family: "Silkscreen", sans-serif;
+    text-shadow: 1px 1px 0 #000;
+}
+
+.horse-stats {
+}
+.horse-stats p {
+    font-family: "Silkscreen", sans-serif;
+    text-shadow: 1px 1px 0 #000;
+}
+.horse-state {
+    margin-bottom: 4px;
+}
+
+.horse-stat-bar {
+    position: relative;
+    width: 100%;
+    height: .7rem;
+    border: 1px solid white;
+    border-radius: 2rem;
+    overflow: hidden;
+}
+.horse-stat-fill {
+    display: block;
+    width: 50%;
+    height: 100%;
+    background-color: #af32af;
+}
+
+/* Horse breeding bar */
+.breeding-bar {
+    position: absolute;
+    top: 42%;
+    left: 4rem;
+    width: 10rem;
+    height: 1rem;
+    overflow: hidden;
+    border: 2px solid white;
+    border-radius: 2rem;
+    background-color: black;
+}
+.breeding-bar-fill {
+    width: 50%;
+    height: 100%;
+}
+.glowing-background {
+  background-color: plum;
+  animation: background-color-change 2s infinite alternate;
+}
+@keyframes background-color-change {
+  0% {
+    background-color: plum;
+  }
+  100% {
+    background-color: purple;
+  }
+}
