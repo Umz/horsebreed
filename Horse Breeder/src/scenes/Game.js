@@ -18,6 +18,13 @@ export class Game extends Phaser.Scene {
         this.breederName = "Player";
         this.breederLevel = 1;
 
+        this.updatePlayerDOM();
+
+        this.captured = [];
+        this.grabbed = null;
+        this.isGrabbing = false;
+        this.firstGrab = true;
+
         this.stable = [];
         this.dropCount = 0;
 
@@ -59,7 +66,7 @@ export class Game extends Phaser.Scene {
 
         // Create the first horse sprite using the new function
 
-        for (let i =0; i<4; i++) {
+        for (let i =0; i<6; i++) {
             const startX = Phaser.Math.Between(0, 640);
             const startY = 216; // Keeping the y-coordinate the same for now
             const randomVelocity = Phaser.Math.RND.pick([-64, 64]);
@@ -72,12 +79,14 @@ export class Game extends Phaser.Scene {
         const canvas = document.getElementById('game-container');
         canvas.classList.add("hand-open");
 
+        //  ---------------------------------------------------------------------------------------
+
         // Make the horse draggable and handle the drop event
-        this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
-            gameObject.setPosition(dragX, dragY);
-            gameObject.setVelocityX(0);
-            gameObject.setFrame(0);
-            gameObject.stop();
+        this.input.on('drag', (pointer, sprite, dragX, dragY) => {
+
+            sprite.setPosition(dragX, dragY);
+            this.handleDrag(sprite);
+            this.firstGrab = false;
 
             canvas.classList.remove("hand-open");
             canvas.classList.add("hand-fist");
@@ -91,22 +100,88 @@ export class Game extends Phaser.Scene {
         });
     }
 
-    update() {
+    update(_, delta) {
         this.cloudManager.update();
+
+        if (this.isGrabbing) {
+            const calmIncrease = 15 * (delta / 1000);
+            const newCalm = this.grabbed.calm + calmIncrease;
+            this.grabbed.calm = Math.min(newCalm, 100);
+            this.updateDOM(this.grabbed);
+        }
+    }
+
+    //  - DOM
+
+    updateDOM(sprite) {
+
+        const horseProfileElement = document.getElementById('horse-profile-1');
+        const nameElement = horseProfileElement.querySelector('.horse-stats p:first-child');
+        if (nameElement) {
+            const sex = sprite.sex === 1 ? '(M)' : '(F)';
+            nameElement.innerHTML = `${sprite.horseName} <span class="sex">${sex}</span>`;
+        }
+
+        // Update the tame percentage
+        const tameElement = horseProfileElement.querySelector('.horse-stats p:nth-child(2)');
+        if (tameElement) {
+            tameElement.textContent = `${sprite.tame}% tame`;
+        }
+
+        // Update the calm state (assuming getCalmState() returns a string)
+        const stateElement = horseProfileElement.querySelector('.horse-stats p.horse-state');
+        if (stateElement) {
+            stateElement.textContent = `${sprite.getCalmState()}:`;
+        }
+
+        const fillElement = horseProfileElement.querySelector('div.horse-stat-fill');
+        if (fillElement) {
+            fillElement.style.width = `${sprite.calm}%`;
+        }
+    }
+
+    updatePlayerDOM() {
+        
+        const nameElement = document.getElementById('player-name');
+        const levelElement = document.getElementById('player-level');
+
+        nameElement.textContent = this.breederName;
+        levelElement.textContent = `Lv. ${this.breederLevel}`;
+    }
+
+    //  - Sprites
+
+    handleDrag(horse) {
+        horse.setVelocityX(0);
+        horse.setFrame(0);
+        horse.stop();
+
+        this.grabbed = horse;
+        this.isGrabbing = true;
+
+        if (this.firstGrab) {
+            this.changeHorseProfile(horse.type)
+        }
     }
 
     handleHorseDrop(horse, house) {
-        if (Phaser.Geom.Intersects.RectangleToRectangle(
-            horse.getBounds(),
-            house.getBounds()
-        )) {
+
+        this.isGrabbing = false;
+        this.firstGrab = true;
+
+        if (Phaser.Geom.Intersects.RectangleToRectangle(horse.getBounds(), house.getBounds())) {
             
             this.stable.push(horse.type);
             horse.input.draggable = false;
             horse.destroy();
 
             if (this.stable.length === 1) {
-                house.setFrame('stable_left');
+                if (horse.sex === 1) {
+                    house.setFrame('stable_left');
+                }
+                else {
+                    house.setFrame('stable_right');
+                }
             }
             else if (this.stable.length === 2) {
                 house.setFrame('stable_closed');
@@ -114,25 +189,42 @@ export class Game extends Phaser.Scene {
             }
         }
         else {
-            horse.setVelocityX(-16);
 
-            const bottomY = horse.getBottomCenter().y;
-            const minY = 196, maxY = 220;
+            if (this.captured.length < 4) {
 
-            if (bottomY > maxY) {
+                this.captured.push(horse);
+
+                horse.setVelocityX(-16);
+
+                const bottomY = horse.getBottomCenter().y;
+                const minY = 196, maxY = 220;
+
+                if (bottomY > maxY) {
+                    this.tweens.add({
+                        targets: horse,
+                        y: maxY - (horse.height / 2),
+                        duration: 200,
+                        ease: 'Linear'
+                    });
+                } else if (bottomY <= minY) {
+                    this.tweens.add({
+                        targets: horse,
+                        y: minY - (horse.height / 2),
+                        duration: 200,
+                        ease: 'Linear'
+                    });
+                }
+            }
+            else {
                 this.tweens.add({
                     targets: horse,
-                    y: maxY - (horse.height / 2),
+                    y: 234 - (horse.height / 2),
                     duration: 200,
                     ease: 'Linear'
                 });
-            } else if (bottomY <= minY) {
-                this.tweens.add({
-                    targets: horse,
-                    y: minY - (horse.height / 2),
-                    duration: 200,
-                    ease: 'Linear'
-                });
+                horse.play(`horse-color-${horse.colNum}-run`);
+                const randomVelocity = Phaser.Math.RND.pick([-96, 96]);
+                horse.setVelocityX(randomVelocity);
             }
         }
     }
@@ -147,7 +239,7 @@ export class Game extends Phaser.Scene {
     }
 
     spawnLogic() {
-        if (this.spriteGroup.countActive() < 8) {
+        if (this.spriteGroup.countActive() < 3) {
             const lv = Phaser.Math.Between(1, this.breederLevel);
             const type = this.getHorseTypeByLevel(lv);
             const startY = Phaser.Math.Between(210, 222);
@@ -172,6 +264,8 @@ export class Game extends Phaser.Scene {
             const newLv = higher + 1;
             this.breederLevel = Math.max(this.breederLevel, newLv);
             breededLv = newLv;
+
+            this.updatePlayerDOM();
         }
         else if (type1 === 1 && type2 === 1) {
             breededLv = 2;
@@ -183,9 +277,16 @@ export class Game extends Phaser.Scene {
             breededLv = Math.max(type1, type2);
         }
 
-        const newType = this.getHorseTypeByLevel(breededLv);
-        this.breedHorse(80, 194, newType);
         this.breedHUD();
+        this.time.addEvent({
+            delay: 7000,
+            callback: ()=>{
+                const newType = this.getHorseTypeByLevel(breededLv);
+                this.breedHorse(80, 194, newType);
+            },
+            callbackScope: this,
+        });
+        
     }
 
     breedHorse(x, y, type) {
@@ -197,6 +298,7 @@ export class Game extends Phaser.Scene {
 
     breedHUD() {
 
+        const stable = this.stableSprite;
         const container = document.getElementById('breeding-bar-container');
         const bar = document.getElementById('id-bbar');
         const fill = document.getElementById('id-bfill');
@@ -219,9 +321,120 @@ export class Game extends Phaser.Scene {
             onComplete: function (tween) {
                 container.classList.add('nodisplay');
                 fill.style.width = '0%';
+                stable.setFrame("stable");
             },
             onCompleteScope: this,
             onUpdateScope: this
         });
     }
+
+    changeHorseProfile(horseType) {
+
+        const c = document.getElementById("horse-canvas-1");
+        const ctx = c.getContext("2d", {willReadFrequently:true});
+        ctx.imageSmoothingEnabled = false;
+
+        let palette = document.getElementById("horse-palette");
+        let horseFace = document.getElementById("horse-head-image");
+
+        ctx.clearRect(0, 0, 90, 80);
+        ctx.drawImage(palette, 0, 0);
+
+        const imageData = ctx.getImageData(0, 0, 44, 12);
+        const data = imageData.data;
+        const imageDataWidth = imageData.width
+
+        // --- Code to extract colors ---
+
+        // Define the structure of your palette colors based on description
+        const columnWidth = 4; // pixels
+        const colorSquareSize = 4; // pixels (height and width of a single color block)
+        const colorsPerColumn = 3; // Number of unique colors stacked vertically in a column
+        const numColumnsToExtract = 11; // You want to extract 3 columns
+
+        let baseColors = [];
+        let toColours = [];
+
+        let pick = horseType.sheet;
+
+        for (let i=0; i<colorsPerColumn; i++) {
+
+            let startX = 0;
+            let startY = i * colorSquareSize;
+
+            // Calculate the index in the data array for the R component of the pixel
+            // The formula is (y * image_width + x) * 4 for RGBA data
+            const pixelIndex = (startY * imageDataWidth + startX) * 4;
+
+            const r = data[pixelIndex];
+            const g = data[pixelIndex + 1];
+            const b = data[pixelIndex + 2];
+            // data[pixelIndex + 3] would be the A (alpha) value if needed
+
+            // Store the extracted color (e.g., as an object)
+            const color = { r: r, g: g, b: b };
+            baseColors.push(color);
+        }
+
+        for (let i=0; i<colorsPerColumn; i++) {
+
+            let startX = pick * columnWidth;
+            let startY = i * colorSquareSize;
+
+            const pixelIndex = (startY * imageDataWidth + startX) * 4;
+
+            const r = data[pixelIndex];
+            const g = data[pixelIndex + 1];
+            const b = data[pixelIndex + 2];
+
+            // Store the extracted color (e.g., as an object)
+            const color = { r: r, g: g, b: b };
+            toColours.push(color);
+        }
+
+        ctx.clearRect(0, 0, 90, 80);
+        ctx.drawImage(horseFace, 0, 0, 90, 80);
+
+        // Get the image data for the area where the horseFace was drawn
+        const horseFaceImageData = ctx.getImageData(0, 0, 90, 80);
+        const horseFaceData = horseFaceImageData.data; // The pixel data array
+        const horseFaceWidth = horseFaceImageData.width; // Should be 90
+        const horseFaceHeight = horseFaceImageData.height; // Should be 80
+
+        // --- Perform color replacement for all colors ---
+        // Loop through every pixel in the horseFace data
+        // The data array is [R, G, B, A, R, G, B, A, ...]
+        for (let i = 0; i < horseFaceData.length; i += 4) {
+            const r = horseFaceData[i];     // Red component of the current pixel
+            const g = horseFaceData[i + 1]; // Green component
+            const b = horseFaceData[i + 2]; // Blue component
+            // horseFaceData[i + 3] is the Alpha component
+
+            // Loop through each base color we want to replace
+            for (let j = 0; j < colorsPerColumn; j++) {
+                const colorToReplace = baseColors[j];
+                const replacementColor = toColours[j];
+
+                // Check if the current pixel's color matches the current base color
+                // You might add a small tolerance here if needed
+                if (r === colorToReplace.r && g === colorToReplace.g && b === colorToReplace.b) {
+                    // If it matches, change the pixel's color to the corresponding replacement color
+                    horseFaceData[i] = replacementColor.r;     // Set Red
+                    horseFaceData[i + 1] = replacementColor.g; // Set Green
+                    horseFaceData[i + 2] = replacementColor.b; // Set Blue
+                    // Keep the original Alpha value
+
+                    // Important: Once we've found a match and replaced the color,
+                    // we can break out of this inner loop and move to the next pixel.
+                    // A pixel should only match one color from the base palette set.
+                    break;
+                }
+            }
+            // If the inner loop finishes without finding a match, the pixel remains unchanged.
+        }
+
+        // Put the modified image data back onto the canvas
+        ctx.putImageData(horseFaceImageData, 0, 0);
+    }
+
 }

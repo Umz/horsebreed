@@ -1,3 +1,4 @@
+let UID = 1;
 
 export class Horse extends Phaser.Physics.Arcade.Sprite {
 
@@ -6,10 +7,18 @@ export class Horse extends Phaser.Physics.Arcade.Sprite {
         scene.add.existing(this);
         scene.physics.add.existing(this);
 
+        this.uid = UID ++;
+
+        const maxTame = horseType.level * 10;
+        this.tame = Phaser.Math.Between(maxTame - 10, maxTame);
+        this.horseName = horseType.name;
+        this.calm = Phaser.Math.Between(45, 60);
+        this.sex =  Phaser.Math.Between(1, 2);
+
         this.type = horseType;
         this.colNum = horseType.sheet;
         this.setInteractive({ draggable: true });
-        this.init(); // Call the init function when the horse is created
+        this.init();
         this.isTweeningFlip = false;
 
         this.playRun();
@@ -20,7 +29,7 @@ export class Horse extends Phaser.Physics.Arcade.Sprite {
         this.setFlipX(velX > 0); // Flip based on initial direction
     }
 
-    update() {
+    update(_, delta) {
         const currentVelocityX = this.body.velocity.x;
 
         if (!this.isTweeningFlip) {
@@ -33,12 +42,33 @@ export class Horse extends Phaser.Physics.Arcade.Sprite {
 
         this.setDepth(this.getBottomCenter().y);
 
-
         // Check if the horse has moved off-screen
         if (this.x < -this.width / 2) {
             this.x = this.scene.scale.width + this.width / 2;
         } else if (this.x > this.scene.scale.width + this.width / 2) {
             this.x = -this.width / 2;
+        }
+    }
+
+    setDragging() {
+    }
+
+    stopDrag() {
+    }
+
+    getCalmState() {
+
+        const calm = this.calm;
+        if (calm >= 0 && calm <= 20) {
+            return "Fleeing";
+        } else if (calm > 20 && calm <= 40) {
+            return "Anxious";
+        } else if (calm > 40 && calm <= 60) {
+            return "Calm";
+        } else if (calm > 60 && calm <= 80) {
+            return "Happy";
+        } else {
+            return "Ready";
         }
     }
 

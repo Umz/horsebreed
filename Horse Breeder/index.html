@@ -84,26 +84,31 @@
                     <img class="player-image" src="./assets/player-profile.png" alt="Mugshot" />
                 </div>
                 <div id="player-info" class="cols">
-                    <p>Player</p>
-                    <p>Lv. 3</p>
+                    <p id="player-name">Player</p>
+                    <p id="player-level">Lv. 3</p>
                 </div>
             </section>
 
             <!-- Horses on farm (Max 4) -->
             <section id="farm-horses" class="horse-profile-list">
 
-                <div class="horse-profile">
+                <div id="horse-profile-1" class="horse-profile">
                     <div class="horse-image-holder">
-                        <p class="sex">M</p>
+                        <canvas id="horse-canvas-1" class="horse-canvas" width=90 height=80>
                     </div>
                     <div class="horse-stats">
-                        <p>Red Hare</p>
+                        <p>Red Hare <span class="sex">(M)</span></p>
                         <p>13% tame</p>
-                        <p>Calm:</p>
+                        <p class="horse-state">Calm:</p>
                         <div class="horse-stat-bar">
                             <div class="horse-stat-fill"></div>
                         </div>
                     </div>
+                </div>
+
+                <div id="profile-holder" class="nodisplay">
+                    <img id="horse-head-image" src="./assets/profile-horse.png" />
+                    <img id="horse-palette" src="./assets/colour-pallette.png" />
                 </div>
 
             </section>
@@ -121,5 +126,15 @@
         <div id="game-container"></div>
         <script src="./phaser.js"></script>
         <script type="module" src="./src/main.js"></script>
+        <script>
+            //  Profile images for horses
+            var c = document.getElementById("horse-canvas-1");
+            var ctx = c.getContext("2d");
+
+            var palette = document.getElementById("horse-head-image");
+            var img = document.getElementById("horse-head-image");
+            ctx.drawImage(img, 0, 0, 90, 80);
+
+        </script>
     </body>
     </html>
