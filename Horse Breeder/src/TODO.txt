@@ -1,0 +1,17 @@
+Horse Icons > Current State *5
+Clouds behind island at the bottom
+Notification, Status, Message bar bottom left
+You've unlocked Horse notification central screen
+Shadows for buildings
+Shadows for Horses
+Breeding bar size and position
+Clouds spawning- starting position or alpha
+Start adding sounds
+Player stats (+tamed, +bred)
+Horse behaviour > captured / escaping / across screen and die
+Enter breeder name
+Enter ranch name
+Pause menu
+Main menu
+
+Code cleanup

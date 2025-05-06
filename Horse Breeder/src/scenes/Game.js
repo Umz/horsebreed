@@ -9,6 +9,7 @@ export class Game extends Phaser.Scene {
     }
 
     preload() {
+        // Session data
     }
 
     create() {
@@ -160,7 +161,11 @@ export class Game extends Phaser.Scene {
         this.isGrabbing = true;
 
         if (this.firstGrab) {
-            this.changeHorseProfile(horse.type)
+            this.changeHorseProfile(horse.type);
+
+            const profileElement = document.getElementById('horse-profile-1');
+            profileElement.classList.remove("nodisplay");
+            profileElement.classList.add("flex");
         }
     }
 
@@ -169,11 +174,22 @@ export class Game extends Phaser.Scene {
         this.isGrabbing = false;
         this.firstGrab = true;
 
-        if (Phaser.Geom.Intersects.RectangleToRectangle(horse.getBounds(), house.getBounds())) {
+        const profileElement = document.getElementById('horse-profile-1');
+        profileElement.classList.remove("flex");
+        profileElement.classList.add("nodisplay");
+
+        const isAvailable = this.stable.filter(h => h.sex === horse.sex).length === 0;
+        const isReady = horse.calm >= 80;
+
+        if (Phaser.Geom.Intersects.RectangleToRectangle(horse.getBounds(), house.getBounds()) && isAvailable && isReady) {
             
-            this.stable.push(horse.type);
+            const type = {...horse.type}
+            type.sex = horse.sex;
+
+            this.stable.push(type);
             horse.input.draggable = false;
             horse.destroy();
+
 
             if (this.stable.length === 1) {
                 if (horse.sex === 1) {
