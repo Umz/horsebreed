@@ -9,11 +9,13 @@ export class Horse extends Phaser.Physics.Arcade.Sprite {
 
         this.uid = UID ++;
 
-        const maxTame = horseType.level * 10;
-        this.tame = Phaser.Math.Between(maxTame - 10, maxTame);
+        const maxTame = horseType.level * 5;
+        this.tame = Math.max(1, Phaser.Math.Between(maxTame - 10, maxTame));
         this.horseName = horseType.name;
-        this.calm = Phaser.Math.Between(45, 60);
+        this.calm = Phaser.Math.Between(5, 20);
         this.sex =  Phaser.Math.Between(1, 2);
+
+        this.calm = 100;
 
         this.type = horseType;
         this.colNum = horseType.sheet;
@@ -30,12 +32,13 @@ export class Horse extends Phaser.Physics.Arcade.Sprite {
     }
 
     update(_, delta) {
-        const currentVelocityX = this.body.velocity.x;
+
+        const velocityX = this.body.velocity.x;
 
         if (!this.isTweeningFlip) {
-            if (currentVelocityX < 0 && this.flipX) {
+            if (velocityX < 0 && this.flipX) {
                 this.startFlipTween(false); // Moving left, currently facing right
-            } else if (currentVelocityX > 0 && !this.flipX) {
+            } else if (velocityX > 0 && !this.flipX) {
                 this.startFlipTween(true);  // Moving right, currently facing left
             }
         }
@@ -43,10 +46,10 @@ export class Horse extends Phaser.Physics.Arcade.Sprite {
         this.setDepth(this.getBottomCenter().y);
 
         // Check if the horse has moved off-screen
-        if (this.x < -this.width / 2) {
-            this.x = this.scene.scale.width + this.width / 2;
-        } else if (this.x > this.scene.scale.width + this.width / 2) {
-            this.x = -this.width / 2;
+        if ((this.x < -this.width / 2) && velocityX < 0) {
+            this.destroy(true);
+        } else if ((this.x > this.scene.scale.width + this.width / 2) && velocityX > 0) {
+            this.destroy(true);
         }
     }
 
@@ -54,6 +57,21 @@ export class Horse extends Phaser.Physics.Arcade.Sprite {
     }
 
     stopDrag() {
+    }
+
+    getShadowColour() {
+        const calm = this.calm;
+        if (calm >= 0 && calm <= 20) {
+            return {col: 0x000000, alpha: .3};
+        } else if (calm > 20 && calm <= 40) {
+            return {col: 0x888888, alpha: .4};
+        } else if (calm > 40 && calm <= 60) {
+            return {col: 0x0D78F1, alpha: .5};
+        } else if (calm > 60 && calm <= 80) {
+            return {col: 0xCE1616, alpha: .6};
+        } else {
+            return {col: 0xDF0DDF, alpha: .7};
+        }
     }
 
     getCalmState() {

@@ -18,6 +18,8 @@ export class Game extends Phaser.Scene {
 
         this.breederName = "Player";
         this.breederLevel = 1;
+        this.bredHorses = 0;
+        this.trainedHorses = 0;   // ITCN value
 
         this.updatePlayerDOM();
 
@@ -30,6 +32,11 @@ export class Game extends Phaser.Scene {
         this.dropCount = 0;
 
         this.spriteGroup = this.add.group({runChildUpdate:true});
+
+        //  Graphics tools
+
+        this.staticShadows = this.add.graphics().setDepth(6);
+        this.horseShadows = this.add.graphics().setDepth(7);
 
         // Create the scene
 
@@ -53,6 +60,41 @@ export class Game extends Phaser.Scene {
         // Create the house sprite
         const house = this.add.sprite(20, 190, "atlas", "stable").setOrigin(0, 1).setDepth(175);
         this.stableSprite = house;
+
+        const top = house.getTopCenter();
+        const ele = document.getElementById("id-bbar");
+        const fillDom = this.add.dom(top.x, top.y, ele);
+        fillDom.setDepth(120);
+        fillDom.setPosition(top.x + fillDom.width * .3, top.y + 40);
+
+        // Draw shadows of all sprites
+
+        this.staticShadows.lineStyle(1, 0x000000, 0.3); // Set line style once
+
+        // Define the array of sprites that need static shadows using an array literal
+        const shadowedSprites = [
+            silo,
+            trough,
+            hay,
+            cart,
+            fence,
+            tree21,
+            tree11,
+            tree12,
+            house // Include house here
+        ];
+
+        // Loop through the array and draw shadows for each sprite
+        shadowedSprites.forEach(sprite => {
+            const bounds = sprite.getBounds();
+
+            // Draw the three horizontal lines beneath the sprite's bottom edge
+            this.staticShadows.lineBetween(bounds.left + 2, bounds.bottom - 1, bounds.right - 2, bounds.bottom - 1);
+            this.staticShadows.lineBetween(bounds.left, bounds.bottom, bounds.right, bounds.bottom);
+            this.staticShadows.lineBetween(bounds.left + 3, bounds.bottom + 1, bounds.right - 3, bounds.bottom + 1);
+        });
+
+        // Spawning
 
         this.time.addEvent({
             delay: 1000,
@@ -110,6 +152,24 @@ export class Game extends Phaser.Scene {
             this.grabbed.calm = Math.min(newCalm, 100);
             this.updateDOM(this.grabbed);
         }
+
+        this.horseShadows.clear();
+        const sprites = this.spriteGroup.getChildren();
+        for (let sprite of sprites) {
+            const bounds = sprite.getBounds();
+            const velX = Math.abs(sprite.body.velocity.x);
+            if (velX > 60) {
+                this.horseShadows.fillStyle(0x000000, .3);
+                this.horseShadows.fillEllipse(bounds.centerX, bounds.bottom - 1, bounds.width, 4);
+            }
+            else if (velX > 0) {
+
+                const shadow = sprite.getShadowColour();
+
+                this.horseShadows.fillStyle(shadow.col, shadow.alpha);
+                this.horseShadows.fillEllipse(bounds.centerX, bounds.bottom - 1, bounds.width, 4);
+            }
+        }
     }
 
     //  - DOM
@@ -139,20 +199,31 @@ export class Game extends Phaser.Scene {
         if (fillElement) {
             fillElement.style.width = `${sprite.calm}%`;
         }
+
+        const top = this.stableSprite.getTopCenter();
+        const ele = document.getElementById("id-bbar");
+        const fillDom = this.add.dom(top.x, top.y, ele);
+        fillDom.setDepth(120);
+        fillDom.setPosition(top.x + fillDom.width * .3, top.y + 40);
     }
 
     updatePlayerDOM() {
         
         const nameElement = document.getElementById('player-name');
         const levelElement = document.getElementById('player-level');
+        const bredElement = document.getElementById("player-bred");
+        //const tamedElement = document.getElementById("player-tamed");
 
         nameElement.textContent = this.breederName;
         levelElement.textContent = `Lv. ${this.breederLevel}`;
+        bredElement.textContent = `Bred: ${this.bredHorses}`;
+        //tamedElement.textContent = `Tamed: ${this.tamedHorses}`;
     }
 
     //  - Sprites
 
     handleDrag(horse) {
+
         horse.setVelocityX(0);
         horse.setFrame(0);
         horse.stop();
@@ -185,11 +256,11 @@ export class Game extends Phaser.Scene {
             
             const type = {...horse.type}
             type.sex = horse.sex;
+            type.tame = horse.tame;
 
             this.stable.push(type);
             horse.input.draggable = false;
             horse.destroy();
-
 
             if (this.stable.length === 1) {
                 if (horse.sex === 1) {
@@ -208,7 +279,7 @@ export class Game extends Phaser.Scene {
 
             if (this.captured.length < 4) {
 
-                this.captured.push(horse);
+                //this.captured.push(horse);
 
                 horse.setVelocityX(-16);
 
@@ -254,13 +325,22 @@ export class Game extends Phaser.Scene {
         return HorseType.BROWN_BROWN;
     }
 
+    isReqTameness(h1, h2, tameLv) {
+        const max = Math.max(h1, h2);
+        console.log("is tame enough", h1, h2, tameLv, (tameLv >= max * 10))
+        return (tameLv >= max * 10);
+    }
+
     spawnLogic() {
-        if (this.spriteGroup.countActive() < 3) {
+        if (this.spriteGroup.countActive() < 7) {
             const lv = Phaser.Math.Between(1, this.breederLevel);
             const type = this.getHorseTypeByLevel(lv);
             const startY = Phaser.Math.Between(210, 222);
-            const horse = new Horse(this, 0, startY, type);
-            horse.init(64);
+            const startX = Phaser.Utils.Array.GetRandom([-80, this.scale.width + 80]);
+            const initX = startX < 0 ? 64 : -64;
+
+            const horse = new Horse(this, startX, startY, type);
+            horse.init(initX);
             this.spriteGroup.add(horse);
         }
     }
@@ -269,25 +349,36 @@ export class Game extends Phaser.Scene {
         
         const type1 = this.stable[0].level;
         const type2 = this.stable[1].level;
-        this.stable.length = 0;
 
         const res = Math.abs(type1 - type2);
-        let breededLv;
+        const fullTame = this.stable[0].tame + this.stable[1].tame;
+        const newTame = Math.min(100, fullTame);
+        const isTameEnough = this.isReqTameness(type1, type2, newTame);
+
+        let breededLv, isNewHorse;
 
         // Successful breed for new type
-        if (res === 1) {
-            const higher = Math.max(type1, type2);
-            const newLv = higher + 1;
-            this.breederLevel = Math.max(this.breederLevel, newLv);
-            breededLv = newLv;
+        if (isTameEnough) {
+            if (res === 1) {
+                const higher = Math.max(type1, type2);
+                const newLv = higher + 1;
+                this.breederLevel = Math.max(this.breederLevel, newLv);
+                breededLv = newLv;
+                isNewHorse = true;
 
-            this.updatePlayerDOM();
-        }
-        else if (type1 === 1 && type2 === 1) {
-            breededLv = 2;
-        }
-        else if (type1 === 9 && type2 === 9) {
-            breededLv = 10;
+                this.updatePlayerDOM();
+            }
+            else if (type1 === 1 && type2 === 1) {
+                breededLv = 2;
+                isNewHorse = true;
+            }
+            else if (type1 === 9 && type2 === 9) {
+                breededLv = 10;
+                isNewHorse = true;
+            }
+            else {
+                breededLv = Math.max(type1, type2);
+            }
         }
         else {
             breededLv = Math.max(type1, type2);
@@ -295,18 +386,26 @@ export class Game extends Phaser.Scene {
 
         this.breedHUD();
         this.time.addEvent({
-            delay: 7000,
+            delay: 1000,
             callback: ()=>{
+
                 const newType = this.getHorseTypeByLevel(breededLv);
-                this.breedHorse(80, 194, newType);
+                this.breedHorse(80, 194, newType, newTame, isNewHorse);
+                this.stable.length = 0;
+
+                this.bredHorses ++;
             },
             callbackScope: this,
         });
         
     }
 
-    breedHorse(x, y, type) {
+    breedHorse(x, y, type, tame, isNewType) {
+        
         const horse = new Horse(this, x, y, type);
+        horse.calm = 100;
+        horse.tame = isNewType ? Math.round(tame * .5) : tame;
+
         horse.init(16);
         horse.playWalk();
         this.spriteGroup.add(horse);

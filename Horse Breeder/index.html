@@ -86,6 +86,8 @@
                 <div id="player-info" class="cols">
                     <p id="player-name">Player</p>
                     <p id="player-level">Lv. 3</p>
+                    <p id="player-bred">Bred: 0</p>
+                    <!--<p id="player-tamed">Trained: 0</p>-->
                 </div>
             </section>
 
@@ -113,13 +115,24 @@
 
             </section>
 
+            <!-- Notifications -->
+            <section id="notifications" class="notification-box">
+                <p id="notification-template" class="notification-message">You unlocked a new breed</p>
+                <p id="n1" class="notification-message">Successfully bred a new horse</p>
+                <p id="n2" class="notification-message">Food unlocked</p>
+            </section>
+
             <!-- Horse breeding bar -->
-            <section id="breeding-bar-container" class="nodisplay">
+            <section id="breeding-bar-container" class="">
                 <div id="id-bbar" class="breeding-bar">
                     <div id="id-bfill" class="breeding-bar-fill glowing-background"></div>
                 </div>
             </section>
 
+        </div>
+
+        <div id="templates" class="nodisplay">
+            <p id="notification-template" class="notification-message">You unlocked a new breed</p>
         </div>
 
         <!-- Game Contained below -->
