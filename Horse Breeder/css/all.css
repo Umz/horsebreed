@@ -130,12 +130,19 @@ img.player-image {
     position: absolute;
     left: 2rem;
     bottom: 2rem;
-    width: 400px;
+    width: 35%;
+    min-width: 400px;
     height: 7rem;
 
     background-color: rgba(0, 0, 0, .3);
     border-radius: 1rem;
     padding: 1rem;
+}
+.notifications-list {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
 }
 
 .notification-message {
@@ -143,6 +150,27 @@ img.player-image {
     font-family: "Silkscreen", sans-serif;
     text-shadow: 1px 1px 0 #000;
 }
+
+.breed-notice {
+    color: lightsalmon;
+}
+.flashing {
+    animation: flashing-color 1s infinite; /* 1s duration, infinite loop */
+}
+
+@keyframes flashing-color {
+    0% {
+        color: yellow;
+    }
+    50% {
+        color: brown;
+        
+    }
+    100% {
+        color: yellow;
+    }
+}
+
 
 /*  -   Horse breeding bar      -------------------------------------------- */
 

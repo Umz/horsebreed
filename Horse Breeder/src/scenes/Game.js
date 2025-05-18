@@ -1,6 +1,7 @@
 import HorseType from '../consts/HorseType.js';
 import { Horse } from '../sprites/Horse.js';
 import { CloudySky } from '../utils/CloudySky.js';
+import { Notification } from '../utils/Notification.js';
 
 export class Game extends Phaser.Scene {
 
@@ -32,6 +33,7 @@ export class Game extends Phaser.Scene {
         this.dropCount = 0;
 
         this.spriteGroup = this.add.group({runChildUpdate:true});
+        this.feedGroup = this.add.group();
 
         //  Graphics tools
 
@@ -97,8 +99,15 @@ export class Game extends Phaser.Scene {
         // Spawning
 
         this.time.addEvent({
-            delay: 1000,
+            delay: 3000,
             callback: this.spawnLogic,
+            callbackScope: this,
+            loop: true
+        });
+
+        this.time.addEvent({
+            delay: 3000,
+            callback: this.spawnFeed,
             callbackScope: this,
             loop: true
         });
@@ -141,15 +150,17 @@ export class Game extends Phaser.Scene {
             canvas.classList.remove("hand-fist");
             canvas.classList.add("hand-open");
         });
+
+        this.spawnFeed();
     }
 
     update(_, delta) {
         this.cloudManager.update();
 
         if (this.isGrabbing) {
-            const calmIncrease = 15 * (delta / 1000);
-            const newCalm = this.grabbed.calm + calmIncrease;
-            this.grabbed.calm = Math.min(newCalm, 100);
+            //const calmIncrease = 15 * (delta / 1000);
+            //const newCalm = this.grabbed.calm + calmIncrease;
+            //this.grabbed.calm = Math.min(newCalm, 100);
             this.updateDOM(this.grabbed);
         }
 
@@ -168,7 +179,19 @@ export class Game extends Phaser.Scene {
 
                 this.horseShadows.fillStyle(shadow.col, shadow.alpha);
                 this.horseShadows.fillEllipse(bounds.centerX, bounds.bottom - 1, bounds.width, 4);
+
+                if (sprite.calm >= 80) {
+                    this.horseShadows.lineStyle(1, 0xffffff, shadow.alpha);
+                    this.horseShadows.strokeEllipse(bounds.centerX, bounds.bottom - 1, bounds.width, 4);
+                }
             }
+        }
+
+        const feeds = this.feedGroup.getChildren();
+        for (let sprite of feeds) {
+            const bounds = sprite.getBounds();
+            this.horseShadows.fillStyle(0x000000, .3);
+            this.horseShadows.fillEllipse(bounds.centerX, bounds.bottom - 1, bounds.width, 4);
         }
     }
 
@@ -258,6 +281,10 @@ export class Game extends Phaser.Scene {
             type.sex = horse.sex;
             type.tame = horse.tame;
 
+            const sexLtr = horse.sex === 1 ? 'M' : 'F'
+            let stableMsg = `Put ${type.name} (${sexLtr}), ${horse.tame}% in stable`;
+            Notification.AddNotice(stableMsg, "plain");
+
             this.stable.push(type);
             horse.input.draggable = false;
             horse.destroy();
@@ -280,7 +307,6 @@ export class Game extends Phaser.Scene {
             if (this.captured.length < 4) {
 
                 //this.captured.push(horse);
-
                 horse.setVelocityX(-16);
 
                 const bottomY = horse.getBottomCenter().y;
@@ -300,6 +326,20 @@ export class Game extends Phaser.Scene {
                         duration: 200,
                         ease: 'Linear'
                     });
+                }
+
+                // Feed group check 
+                const isOverlappingFeed = this.feedGroup.getChildren().some(feedItem => {
+                    return Phaser.Geom.Intersects.RectangleToRectangle(horse.getBounds(), feedItem.getBounds());
+                });
+                if (isOverlappingFeed) {
+
+                    const overlappedFeedItem = this.feedGroup.getChildren().find(feedItem =>
+                        Phaser.Geom.Intersects.RectangleToRectangle(horse.getBounds(), feedItem.getBounds())
+                    );
+                    overlappedFeedItem.destroy(true);
+
+                    horse.calm += 20;
                 }
             }
             else {
@@ -344,6 +384,23 @@ export class Game extends Phaser.Scene {
             this.spriteGroup.add(horse);
         }
     }
+
+    //  -
+    spawnFeed() {
+        if (this.feedGroup.countActive() < 3) {
+
+            const width = this.scale.width;
+
+            const startX = Phaser.Math.Between(width * .45, width * .86);
+            const startY = Phaser.Math.Between(198, 216) - 8;
+
+            const feed = this.add.sprite(startX, startY, "atlas", "feed");
+            feed.setDepth(startY + 8);
+            this.feedGroup.add(feed);
+        }
+    }
+
+    //  -
 
     breedLogic() {
         
@@ -409,6 +466,16 @@ export class Game extends Phaser.Scene {
         horse.init(16);
         horse.playWalk();
         this.spriteGroup.add(horse);
+
+        if (isNewType) {
+            const typeMsg = `You have bred a ${type.name}`;
+            Notification.AddNotice(typeMsg, "flashing");
+        }
+        else {
+            const sexLtr = horse.sex === 1 ? 'M' : 'F';
+            const breedMsg = `Bred a ${type.name} (${sexLtr}) with ${horse.tame}% tameness`;
+            Notification.AddNotice(breedMsg, "breed-notice");
+        }
     }
 
     breedHUD() {

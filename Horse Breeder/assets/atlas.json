@@ -50,7 +50,7 @@
 },
 {
 	"filename": "cloud6",
-	"frame": {"x":0,"y":23,"w":62,"h":30},
+	"frame": {"x":24,"y":23,"w":62,"h":30},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":62,"h":30},
@@ -58,7 +58,7 @@
 },
 {
 	"filename": "cloud7",
-	"frame": {"x":386,"y":23,"w":71,"h":46},
+	"frame": {"x":410,"y":23,"w":71,"h":46},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":71,"h":46},
@@ -79,6 +79,14 @@
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":208,"h":111},
 	"sourceSize": {"w":208,"h":111}
+},
+{
+	"filename": "feed",
+	"frame": {"x":0,"y":23,"w":24,"h":24},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":24,"h":24},
+	"sourceSize": {"w":24,"h":24}
 },
 {
 	"filename": "fence",
@@ -106,7 +114,7 @@
 },
 {
 	"filename": "stable",
-	"frame": {"x":62,"y":23,"w":81,"h":39},
+	"frame": {"x":86,"y":23,"w":81,"h":39},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":81,"h":39},
@@ -114,7 +122,7 @@
 },
 {
 	"filename": "stable_closed",
-	"frame": {"x":143,"y":23,"w":81,"h":39},
+	"frame": {"x":167,"y":23,"w":81,"h":39},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":81,"h":39},
@@ -122,7 +130,7 @@
 },
 {
 	"filename": "stable_left",
-	"frame": {"x":224,"y":23,"w":81,"h":39},
+	"frame": {"x":248,"y":23,"w":81,"h":39},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":81,"h":39},
@@ -130,7 +138,7 @@
 },
 {
 	"filename": "stable_right",
-	"frame": {"x":305,"y":23,"w":81,"h":39},
+	"frame": {"x":329,"y":23,"w":81,"h":39},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":81,"h":39},
@@ -167,6 +175,6 @@
 	"format": "RGBA8888",
 	"size": {"w":485,"h":238},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:64ae745ea71cfe5fffde16b37e104306:2fde975a2abc3f04c4615b73bf361857:cbce6b53f0f49e0bf15173c25c41f876$"
+	"smartupdate": "$TexturePacker:SmartUpdate:dae2d45638a6e3b54dca425c059149a5:782fce6caa4586ea519321799215b857:cbce6b53f0f49e0bf15173c25c41f876$"
 }
 }

@@ -1,13 +1,11 @@
-Feeding Horses
-
-Horse behaviour > captured / escaping / across screen and die
-Notifications
-Start adding sounds
 You've unlocked Horse notification central screen
+
+Delay between breeding
+Start adding sounds
+Fx (Breeding, lifting, dropping, door closing, dragging,)
 Enter breeder name
 Enter ranch name
 Pause menu
 Main menu
-Fx (Breeding, lifting, dropping, door closing, dragging,)
 
 Code cleanup

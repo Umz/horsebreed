@@ -1,3 +1,5 @@
+import HorseState from "../consts/HorseState.js"
+
 let UID = 1;
 
 export class Horse extends Phaser.Physics.Arcade.Sprite {
@@ -15,7 +17,7 @@ export class Horse extends Phaser.Physics.Arcade.Sprite {
         this.calm = Phaser.Math.Between(5, 20);
         this.sex =  Phaser.Math.Between(1, 2);
 
-        this.calm = 100;
+        this.state = HorseState.WILD;
 
         this.type = horseType;
         this.colNum = horseType.sheet;
@@ -33,6 +35,8 @@ export class Horse extends Phaser.Physics.Arcade.Sprite {
 
     update(_, delta) {
 
+        this.setDepth(this.getBottomCenter().y);
+
         const velocityX = this.body.velocity.x;
 
         if (!this.isTweeningFlip) {
@@ -43,7 +47,19 @@ export class Horse extends Phaser.Physics.Arcade.Sprite {
             }
         }
 
-        this.setDepth(this.getBottomCenter().y);
+        //  State switching
+        const speed = Math.abs(this.body.velocity.x);
+        if (speed < 64 && speed > 0) {
+
+            this.calm = Math.max(0, this.calm - (delta * .001) * 2);
+
+            // CALM
+            this.pacing();
+
+            if (this.calm <= 0) {
+                this.escaping();
+            }
+        }
 
         // Check if the horse has moved off-screen
         if ((this.x < -this.width / 2) && velocityX < 0) {
@@ -53,10 +69,26 @@ export class Horse extends Phaser.Physics.Arcade.Sprite {
         }
     }
 
-    setDragging() {
+    pacing() {
+
+        const min = this.scene.scale.width * .35;
+        const max = this.scene.scale.width * .85;
+        const velX = this.body.velocity.x;
+
+        if (this.x >= max && velX > 0) {
+            this.setVelocityX(velX * -1);
+        }
+        else if (this.x <= min && velX < 0) {
+            this.setVelocityX(velX * -1);
+        }
     }
 
-    stopDrag() {
+    escaping() {
+        const speed = Math.abs(this.body.velocity.x);
+        if (speed < 64) {
+            this.body.velocity.x *= 5;
+            this.playRun();
+        }
     }
 
     getShadowColour() {
