@@ -1,4 +1,5 @@
 import HorseType from '../consts/HorseType.js';
+import Sfx from "../consts/Sfx.js";
 import { Horse } from '../sprites/Horse.js';
 import { CloudySky } from '../utils/CloudySky.js';
 import { Notification } from '../utils/Notification.js';
@@ -15,6 +16,9 @@ export class Game extends Phaser.Scene {
 
     create() {
 
+        const music = this.sound.add(Sfx.BG);
+        music.play({loop:true});
+
         // Game stats
 
         this.breederName = "Player";
@@ -28,6 +32,12 @@ export class Game extends Phaser.Scene {
         this.grabbed = null;
         this.isGrabbing = false;
         this.firstGrab = true;
+
+        //this.breedTime = 7000;
+        //this.breedDelay = 3000;
+        this.breedTime = 1000;
+        this.breedDelay = 3000;
+        this.isStableReady = true;
 
         this.stable = [];
         this.dropCount = 0;
@@ -158,9 +168,6 @@ export class Game extends Phaser.Scene {
         this.cloudManager.update();
 
         if (this.isGrabbing) {
-            //const calmIncrease = 15 * (delta / 1000);
-            //const newCalm = this.grabbed.calm + calmIncrease;
-            //this.grabbed.calm = Math.min(newCalm, 100);
             this.updateDOM(this.grabbed);
         }
 
@@ -260,6 +267,8 @@ export class Game extends Phaser.Scene {
             const profileElement = document.getElementById('horse-profile-1');
             profileElement.classList.remove("nodisplay");
             profileElement.classList.add("flex");
+
+            this.sound.play(Sfx.GRAB, {volume:.2});
         }
     }
 
@@ -275,7 +284,7 @@ export class Game extends Phaser.Scene {
         const isAvailable = this.stable.filter(h => h.sex === horse.sex).length === 0;
         const isReady = horse.calm >= 80;
 
-        if (Phaser.Geom.Intersects.RectangleToRectangle(horse.getBounds(), house.getBounds()) && isAvailable && isReady) {
+        if (Phaser.Geom.Intersects.RectangleToRectangle(horse.getBounds(), house.getBounds()) && isAvailable && isReady && this.isStableReady) {
             
             const type = {...horse.type}
             type.sex = horse.sex;
@@ -288,6 +297,8 @@ export class Game extends Phaser.Scene {
             this.stable.push(type);
             horse.input.draggable = false;
             horse.destroy();
+
+            this.sound.play(Sfx.DOOR_SHUT);
 
             if (this.stable.length === 1) {
                 if (horse.sex === 1) {
@@ -339,7 +350,12 @@ export class Game extends Phaser.Scene {
                     );
                     overlappedFeedItem.destroy(true);
 
-                    horse.calm += 20;
+                    horse.calm = Math.min(100, horse.calm + 20);
+                    
+                    this.sound.play(Sfx.EAT, {volume:.4});
+                    if (horse.calm >= 80) {
+                        this.sound.play(Sfx.READY, {volume:.4});
+                    }
                 }
             }
             else {
@@ -443,7 +459,7 @@ export class Game extends Phaser.Scene {
 
         this.breedHUD();
         this.time.addEvent({
-            delay: 1000,
+            delay: this.breedTime,
             callback: ()=>{
 
                 const newType = this.getHorseTypeByLevel(breededLv);
@@ -470,17 +486,18 @@ export class Game extends Phaser.Scene {
         if (isNewType) {
             const typeMsg = `You have bred a ${type.name}`;
             Notification.AddNotice(typeMsg, "flashing");
+            this.sound.play(Sfx.UNLOCK);
         }
         else {
             const sexLtr = horse.sex === 1 ? 'M' : 'F';
             const breedMsg = `Bred a ${type.name} (${sexLtr}) with ${horse.tame}% tameness`;
             Notification.AddNotice(breedMsg, "breed-notice");
+            this.sound.play(Sfx.BORN);
         }
     }
 
     breedHUD() {
 
-        const stable = this.stableSprite;
         const container = document.getElementById('breeding-bar-container');
         const bar = document.getElementById('id-bbar');
         const fill = document.getElementById('id-bfill');
@@ -492,7 +509,7 @@ export class Game extends Phaser.Scene {
         this.tweens.add({
             targets: tweenProgress,
             value: 100,
-            duration: 7000,
+            duration: this.breedTime,
             ease: 'Linear',
 
             onUpdate: function (tween) {
@@ -500,13 +517,22 @@ export class Game extends Phaser.Scene {
                 fill.style.width = Math.max(0, Math.min(100, currentProgress)) + '%';
             },
 
-            onComplete: function (tween) {
+            onComplete: (tween) => {
                 container.classList.add('nodisplay');
                 fill.style.width = '0%';
-                stable.setFrame("stable");
+
+                this.stableRefresh();
             },
             onCompleteScope: this,
             onUpdateScope: this
+        });
+    }
+
+    stableRefresh() {
+        const stable = this.stableSprite;
+        this.time.delayedCall(this.breedDelay, ()=>{
+            this.isStableReady = true;
+            stable.setFrame("stable");
         });
     }
 

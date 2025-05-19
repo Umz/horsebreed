@@ -1,8 +1,6 @@
-You've unlocked Horse notification central screen
-
-Delay between breeding
-Start adding sounds
 Fx (Breeding, lifting, dropping, door closing, dragging,)
+
+Add full sounds (pause, start, UI sounds)
 Enter breeder name
 Enter ranch name
 Pause menu

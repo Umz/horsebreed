@@ -1,4 +1,5 @@
 import HorseState from "../consts/HorseState.js"
+import Sfx from "../consts/Sfx.js";
 
 let UID = 1;
 
@@ -58,6 +59,7 @@ export class Horse extends Phaser.Physics.Arcade.Sprite {
 
             if (this.calm <= 0) {
                 this.escaping();
+                this.scene.sound.play(Sfx.FLEE, {volume:.3});
             }
         }
 

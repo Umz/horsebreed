@@ -1,3 +1,5 @@
+import Sfx from "../consts/Sfx.js";
+
 export class Preload extends Phaser.Scene {
 
     constructor() {
@@ -5,6 +7,11 @@ export class Preload extends Phaser.Scene {
     }
 
     preload() {
+
+        const sounds = Object.values(Sfx);
+        for (let sfx of sounds) {
+            this.load.audio(sfx, `assets/${sfx}.mp3`);
+        }
 
         this.load.image('ground', 'assets/ground.png');
         this.load.image('moon', 'assets/moon.png');
