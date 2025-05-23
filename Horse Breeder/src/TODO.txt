@@ -1,9 +1,7 @@
-Fx (Breeding, lifting, dropping, door closing, dragging,)
-
+Main menu
+Pause menu
 Add full sounds (pause, start, UI sounds)
 Enter breeder name
 Enter ranch name
-Pause menu
-Main menu
 
 Code cleanup

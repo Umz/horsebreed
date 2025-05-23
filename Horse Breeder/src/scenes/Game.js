@@ -73,6 +73,67 @@ export class Game extends Phaser.Scene {
         const house = this.add.sprite(20, 190, "atlas", "stable").setOrigin(0, 1).setDepth(175);
         this.stableSprite = house;
 
+        const stableBounds = this.stableSprite.getBounds();
+        const topEdgeRect = new Phaser.Geom.Rectangle(
+            stableBounds.x,
+            stableBounds.y, // Top of the sprite
+            stableBounds.width,
+            1
+        );
+
+        const emitZoneConfig = {
+            type: 'random', // 'edge' is for emitting along the perimeter. 'random' for anywhere within the source.
+                            // If you want strictly the top line, 'random' with a thin rectangle is better.
+                            // If 'edge' is desired, it will emit from all 4 edges of the rectangle.
+            source: topEdgeRect,
+            // quantity: 42 // Quantity for burst emission, not continuous.
+        };
+
+        const emitter = this.add.particles(0, 0, 'heart', {
+            speedY: { min: -50, max: -150 },
+            speedX: { min: -20, max: 20 },
+            gravityY: -30,
+            lifespan: 1000,
+            scale: { start: 1, end: 0 },
+            alpha: { start: 1, end: 0 },
+            frequency: 200, // Continuous emission: 2 particles per second
+            emitting: false, // Start with emitter off, you can turn it on later with emitter.start()
+            emitZone: emitZoneConfig,
+        });
+        emitter.setDepth(180);
+        this.breedEmitter = emitter;
+
+        this.grabEmitter = this.add.particles(
+            0,
+            0,
+            'star',
+            {
+                speed: 100,
+                angle: { min: 0, max: 360 },
+                lifespan: 1000,
+                scale: { start: 1, end: 0 },
+                alpha: { start: 1, end: 0 },
+                frequency: 250,
+                emitting: false,
+            }
+        );
+        this.grabEmitter.setDepth(200);
+
+        this.pixelExplosionEmitter = this.add.particles(0, 0, 'redPixel', {
+            speed: { min: 20, max: 100 }, // Speed for the pixels to spread out
+            angle: { min: 0, max: 360 }, // Emit in all directions
+            gravityY: 300, // Pixels fall downwards over time
+            lifespan: 800, // Pixels disappear quickly
+            scale: { start: 1, end: 0 }, // Pixels shrink as they disappear
+            alpha: { start: 1, end: 0 }, // Pixels fade out
+            quantity: 10, // Number of pixels in one explosion
+            emitting: false, // Emitter starts off, will be triggered by collision
+            blendMode: 'NORMAL', // Or 'ADD' for a brighter effect
+        });
+        this.pixelExplosionEmitter.setDepth(320); // Ensure it's visible above other elements
+
+        //  ------
+
         const top = house.getTopCenter();
         const ele = document.getElementById("id-bbar");
         const fillDom = this.add.dom(top.x, top.y, ele);
@@ -159,6 +220,8 @@ export class Game extends Phaser.Scene {
             
             canvas.classList.remove("hand-fist");
             canvas.classList.add("hand-open");
+
+            this.grabEmitter.stop();
         });
 
         this.spawnFeed();
@@ -268,6 +331,9 @@ export class Game extends Phaser.Scene {
             profileElement.classList.remove("nodisplay");
             profileElement.classList.add("flex");
 
+            this.grabEmitter.start();
+            this.grabEmitter.startFollow(this.grabbed);
+
             this.sound.play(Sfx.GRAB, {volume:.2});
         }
     }
@@ -348,9 +414,11 @@ export class Game extends Phaser.Scene {
                     const overlappedFeedItem = this.feedGroup.getChildren().find(feedItem =>
                         Phaser.Geom.Intersects.RectangleToRectangle(horse.getBounds(), feedItem.getBounds())
                     );
+                    this.pixelExplosionEmitter.explode(10, overlappedFeedItem.x, overlappedFeedItem.y);
                     overlappedFeedItem.destroy(true);
 
                     horse.calm = Math.min(100, horse.calm + 20);
+
                     
                     this.sound.play(Sfx.EAT, {volume:.4});
                     if (horse.calm >= 80) {
@@ -457,6 +525,7 @@ export class Game extends Phaser.Scene {
             breededLv = Math.max(type1, type2);
         }
 
+        this.breedEmitter.start();
         this.breedHUD();
         this.time.addEvent({
             delay: this.breedTime,
@@ -467,6 +536,7 @@ export class Game extends Phaser.Scene {
                 this.stable.length = 0;
 
                 this.bredHorses ++;
+                this.breedEmitter.stop();
             },
             callbackScope: this,
         });

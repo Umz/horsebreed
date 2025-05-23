@@ -41,6 +41,35 @@
 .nodisplay { display: none }
 .flex { display: flex }
 
+/* Main Menu -------------------------------------- */
+
+.menu-logo {
+    margin: 0 auto;
+    width: 20rem;
+    image-rendering: pixelated;
+}
+
+.main-menu-buttons {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+
+.main-menu-button {
+    border: none;
+    width: fit-content;
+    background: none;
+    margin: 0 auto;
+
+    font-weight: 900;
+    font-size: 2rem;
+    font-family: "Silkscreen", sans-serif;
+
+    color: white;
+    text-shadow: 1px 4px 0 #000;
+}
+
 /* Stats */
 .stat-box {
     border: 2px solid brown;
