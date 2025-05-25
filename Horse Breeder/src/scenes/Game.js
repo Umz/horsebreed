@@ -33,10 +33,8 @@ export class Game extends Phaser.Scene {
         this.isGrabbing = false;
         this.firstGrab = true;
 
-        //this.breedTime = 7000;
-        //this.breedDelay = 3000;
-        this.breedTime = 1000;
-        this.breedDelay = 3000;
+        this.breedTime = 7000;
+        this.breedDelay = 5000;
         this.isStableReady = true;
 
         this.stable = [];

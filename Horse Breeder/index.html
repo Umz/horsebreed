@@ -49,15 +49,15 @@
         <!-- Main Menu Container -->
         <div id="main-menu" class="container z1">
             
-            <section id="menu-list" class="centerblock nodisplay">
+            <section id="menu-list" class="centerblock">
                 <img class="menu-logo" src="./assets/logo-px.png" alt="Horse Breeder" />
 
                 <div class="main-menu-buttons">
-                    <button id="menu-play-button" class="main-menu-button">Play</button>
-                    <button id="menu-instructions-button" class="main-menu-button">How to Play</button>
-                    <button id="menu-info-button" class="main-menu-button">Breeding Guide</button>
-                    <button id="menu-credits-button" class="main-menu-button">Credits</button>
-                    <button id="menu-itcn-button" class="main-menu-button">Interconnect</button>
+                    <button id="menu-play-button" class="main-menu-button" data-hide-id="menu-list" data-show-id="hud-container">Play</button>
+                    <button id="menu-instructions-button" class="main-menu-button" data-hide-id="menu-list" data-show-id="how-to-play">How to Play</button>
+                    <button id="menu-info-button" class="main-menu-button" data-hide-id="menu-list" data-show-id="knowledge">Breeding Guide</button>
+                    <button id="menu-credits-button" class="main-menu-button" data-hide-id="menu-list" data-show-id="credits">Credits</button>
+                    <!--<button id="menu-itcn-button" class="main-menu-button">Interconnect</button>-->
                 </div>
             </section>
 
@@ -65,14 +65,14 @@
                 <h3>How to Play</h3>
                 <p>Drag the free running horses to your ranch to feed them and breed them. Create more tame horses of differents breeds.</p>
                 <p>Mix brown breeds (brown/blue) with full colour breeds to unlock new breeds.</p>
-                <button class="menu-back-button">&larr; Back</button>
+                <button class="menu-back-button" data-hide-id="how-to-play" data-show-id="menu-list">&larr; Back</button>
             </section>
 
-            <section id="knowledge" class="centerblock infoblock">
+            <section id="knowledge" class="centerblock infoblock nodisplay">
                 <h3>Breeding Guide</h3>
                 <table id="bd-tbl" class="breeding-table">
                 </table>
-                <button class="menu-back-button" data-hide-id="knowledge">&larr; Back</button>
+                <button class="menu-back-button" data-hide-id="knowledge" data-show-id="menu-list">&larr; Back</button>
             </section>
 
             <section id="credits" class="centerblock infoblock nodisplay">
@@ -83,7 +83,7 @@
                     <p>Horse: <span class="credit-link">https://opengameart.org/content/animated-horse</span></p>
                     <p>Clouds: <span class="credit-link">https://justajoke.itch.io/clouds-set-icons</span></p>
                 </fieldset>
-                <button class="menu-back-button">&larr; Back</button>
+                <button class="menu-back-button" data-hide-id="credits" data-show-id="menu-list">&larr; Back</button>
             </section>
 
         </div>
@@ -107,6 +107,9 @@
                     <p id="player-level">Lv. 3</p>
                     <p id="player-bred">Bred: 0</p>
                     <!--<p id="player-tamed">Trained: 0</p>-->
+                </div>
+                <div>
+                    <button class="menu-back-button" data-hide-id="hud-container" data-show-id="menu-list">&#9208;</button>
                 </div>
             </section>
 
@@ -142,7 +145,7 @@
             </section>
 
             <!-- Horse breeding bar -->
-            <section id="breeding-bar-container" class="">
+            <section id="breeding-bar-container" class="nodisplay">
                 <div id="id-bbar" class="breeding-bar">
                     <div id="id-bfill" class="breeding-bar-fill glowing-background"></div>
                 </div>
@@ -214,16 +217,18 @@
 
                         if (i===1 && j===1) {
                             data = all[2];
+                            column.textContent = "10%";
                         }
                         else if (i===9 && j===9) {
-                            data = all[10]
+                            data = all[10];
+                            column.textContent = "80%";
                         }
-                        else if (dist === 1 && colHigher) {
+                        else if (dist === 1 && colHigher && j < 10) {
                             let maxIndex = Math.min(j + 1, 10);
                             data = all[maxIndex];
                             column.textContent = `${(data.level - 1) * 10}%`;
                         }
-                        else if (dist === 1 && rowHigher) {
+                        else if (dist === 1 && rowHigher && i < 10) {
                             let maxIndex = Math.min(i + 1, 10);
                             data = all[maxIndex];
                             column.textContent = `${(data.level - 1) * 10}%`;
@@ -236,7 +241,14 @@
                         }
                     }
 
-                    column.style.background = `linear-gradient(to right, ${data.hair} 50%, ${data.body} 50%)`;
+                    if (i > 0 && j > 0 && i > j) {
+                        column.style.background = "#000";
+                        column.style.opacity = "20%";
+                        column.textContent = "-";
+                    }
+                    else {
+                        column.style.background = `linear-gradient(to right, ${data.hair} 50%, ${data.body} 50%)`;
+                    }
 
                     row.appendChild(column);
                 }
@@ -265,27 +277,37 @@
                 }
             }
 
+            function toggleMenus(toHide, toShow) {
+
+                const elementToHide = document.getElementById(toHide);
+                const mainMenuElement = document.getElementById(toShow);
+
+                if (elementToHide && mainMenuElement) {
+                    elementToHide.classList.add('nodisplay');
+                    mainMenuElement.classList.remove('nodisplay');
+                } else {
+                    console.warn(`toggleMenus: #${toHide} or #${toShow} element(s) not found.`);
+                }
+            }
+
             // --- Example Usage (how to attach this to your buttons) ---
 
             // You would typically call this setup code once when your page loads,
             // for instance, inside a DOMContentLoaded listener or at the end of your script.
             document.addEventListener('DOMContentLoaded', () => {
                 // Get all elements with the class 'menu-back-button'
-                const backButtons = document.querySelectorAll('.menu-back-button');
+                const backButtons = document.querySelectorAll('.menu-back-button, .main-menu-button');
 
                 // Loop through each back button and attach a click event listener
                 backButtons.forEach(button => {
                     button.addEventListener('click', () => {
-                        // Determine which element to hide based on the button clicked.
-                        // You'll need a way to know which specific menu section this button belongs to.
-                        // A common pattern is to use a data attribute on the button, e.g., data-hide-id.
-                        // Example: <button class="menu-back-button" data-hide-id="settings-menu">&larr; Back</button>
                         const elementIdToHide = button.dataset.hideId;
+                        const elementIdToShow = button.dataset.showId;
 
                         if (elementIdToHide) {
-                            toggleMenuVisibility(elementIdToHide);
+                            toggleMenus(elementIdToHide, elementIdToShow);
                         } else {
-                            console.warn("Back button clicked but no 'data-hide-id' attribute found to specify which element to hide.");
+                            console.warn("Button clicked but no 'data-hide-id' or 'data-show-id' attribute found.");
                         }
                     });
                 });
