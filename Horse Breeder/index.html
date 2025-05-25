@@ -5,7 +5,6 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Horse Breeder | Umz Games</title>
         <style>
-            /* Reset CSS: Please avoid making changes here unless you know what you're doing :) */
             *,
             *::before,
             *::after {
@@ -50,24 +49,41 @@
         <!-- Main Menu Container -->
         <div id="main-menu" class="container z1">
             
-            <section id="menu-list">
+            <section id="menu-list" class="centerblock nodisplay">
                 <img class="menu-logo" src="./assets/logo-px.png" alt="Horse Breeder" />
 
                 <div class="main-menu-buttons">
                     <button id="menu-play-button" class="main-menu-button">Play</button>
                     <button id="menu-instructions-button" class="main-menu-button">How to Play</button>
-                    <button id="menu-info-button" class="main-menu-button">Knowledge</button>
-                    <button id="menu-reset-button" class="main-menu-button">Reset Data</button>
+                    <button id="menu-info-button" class="main-menu-button">Breeding Guide</button>
                     <button id="menu-credits-button" class="main-menu-button">Credits</button>
                     <button id="menu-itcn-button" class="main-menu-button">Interconnect</button>
                 </div>
             </section>
 
-            <section id="credits" class="nodisplay">
-                <p>Art Resources</p>
-                Farmer: https://opengameart.org/content/farmer
-                Horse: https://opengameart.org/content/animated-horse
-                Clouds: https://justajoke.itch.io/clouds-set-icons
+            <section id="how-to-play" class="centerblock infoblock nodisplay">
+                <h3>How to Play</h3>
+                <p>Drag the free running horses to your ranch to feed them and breed them. Create more tame horses of differents breeds.</p>
+                <p>Mix brown breeds (brown/blue) with full colour breeds to unlock new breeds.</p>
+                <button class="menu-back-button">&larr; Back</button>
+            </section>
+
+            <section id="knowledge" class="centerblock infoblock">
+                <h3>Breeding Guide</h3>
+                <table id="bd-tbl" class="breeding-table">
+                </table>
+                <button class="menu-back-button" data-hide-id="knowledge">&larr; Back</button>
+            </section>
+
+            <section id="credits" class="centerblock infoblock nodisplay">
+                <h3>Credits</h3>
+                <fieldset>
+                    <legend>Art Resources</legend>
+                    <p>Farmer: <span class="credit-link">https://opengameart.org/content/farmer</span></p>
+                    <p>Horse: <span class="credit-link">https://opengameart.org/content/animated-horse</span></p>
+                    <p>Clouds: <span class="credit-link">https://justajoke.itch.io/clouds-set-icons</span></p>
+                </fieldset>
+                <button class="menu-back-button">&larr; Back</button>
             </section>
 
         </div>
@@ -150,6 +166,130 @@
             var palette = document.getElementById("horse-head-image");
             var img = document.getElementById("horse-head-image");
             ctx.drawImage(img, 0, 0, 90, 80);
+
+            // Populate table
+
+            const tableID = "bd-tbl"
+            const all = [
+                {name:"Empty", body: "#fff", hair:"#fff", level:0},
+                {name:"Brownie", body: "#703016", hair:"#c46423", level:1},
+                {name:"Red/Brown", body: "#703016", hair:"#ac3232", level:2},
+                {name:"Red Hare", body: "#9c2828", hair:"#CD5C5C", level:3},
+                {name:"Bis/Brown", body: "#703016", hair:"#ece551", level:4},
+                {name:"Wheatcorn", body: "#b9b668", hair:"#ece430", level:5},
+                {name:"Wit/Brown", body: "#703016", hair:"#eeeeee", level:6},
+                {name:"Cloudy", body: "#dddddd", hair:"#d2f2f5", level:7},
+                {name:"Bli/Brown", body: "#703016", hair:"#c0cbd1", level:8},
+                {name:"Dusk", body: "#888888", hair:"#c0cbd1", level:9},
+                {name:"Charcoal", body: "#222222", hair:"#170803", level:10},
+            ];
+
+            const tableElement = document.getElementById(tableID);
+
+            for (let i=0; i<all.length; i++) {
+
+                const row = document.createElement("tr");
+
+                for (let j=0; j<all.length; j++) {
+
+                    const column = document.createElement("td");
+                    let data;
+
+                    if (j === 0 && i > 0) {
+                        data = all[i];
+                    }
+                    else if (i == 0) {
+                        data = all[j];
+                    }
+                    else {
+                        
+                        data = all[i];
+                        let colH = all[j];
+                        let rowH = all[i];
+
+                        let rowHigher = rowH.level > colH.level;
+                        let colHigher = rowH.level < colH.level;
+
+                        let dist = Math.abs(rowH.level - colH.level);
+
+                        if (i===1 && j===1) {
+                            data = all[2];
+                        }
+                        else if (i===9 && j===9) {
+                            data = all[10]
+                        }
+                        else if (dist === 1 && colHigher) {
+                            let maxIndex = Math.min(j + 1, 10);
+                            data = all[maxIndex];
+                            column.textContent = `${(data.level - 1) * 10}%`;
+                        }
+                        else if (dist === 1 && rowHigher) {
+                            let maxIndex = Math.min(i + 1, 10);
+                            data = all[maxIndex];
+                            column.textContent = `${(data.level - 1) * 10}%`;
+                        }
+                        else if (rowHigher) {
+                            data = all[i];
+                        }
+                        else if (colHigher) {
+                            data = all[j];
+                        }
+                    }
+
+                    column.style.background = `linear-gradient(to right, ${data.hair} 50%, ${data.body} 50%)`;
+
+                    row.appendChild(column);
+                }
+
+                tableElement.appendChild(row);
+            }
+
+            // ---------------------------------------------------------------------------------
+
+            function toggleMenuVisibility(elementIdToHide) {
+                // Get the element to hide
+                const elementToHide = document.getElementById(elementIdToHide);
+                // Get the main menu element
+                const mainMenuElement = document.getElementById('menu-list');
+
+                // Check if both elements exist to prevent errors
+                if (elementToHide && mainMenuElement) {
+                    // Hide the specified element by adding the 'nodisplay' class
+                    elementToHide.classList.add('nodisplay');
+
+                    // Show the main menu by removing the 'nodisplay' class
+                    mainMenuElement.classList.remove('nodisplay');
+                } else {
+                    console.warn(`toggleMenuVisibility: One or both elements not found. 
+                                Element to hide: #${elementIdToHide}, Main menu: #menu-list`);
+                }
+            }
+
+            // --- Example Usage (how to attach this to your buttons) ---
+
+            // You would typically call this setup code once when your page loads,
+            // for instance, inside a DOMContentLoaded listener or at the end of your script.
+            document.addEventListener('DOMContentLoaded', () => {
+                // Get all elements with the class 'menu-back-button'
+                const backButtons = document.querySelectorAll('.menu-back-button');
+
+                // Loop through each back button and attach a click event listener
+                backButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        // Determine which element to hide based on the button clicked.
+                        // You'll need a way to know which specific menu section this button belongs to.
+                        // A common pattern is to use a data attribute on the button, e.g., data-hide-id.
+                        // Example: <button class="menu-back-button" data-hide-id="settings-menu">&larr; Back</button>
+                        const elementIdToHide = button.dataset.hideId;
+
+                        if (elementIdToHide) {
+                            toggleMenuVisibility(elementIdToHide);
+                        } else {
+                            console.warn("Back button clicked but no 'data-hide-id' attribute found to specify which element to hide.");
+                        }
+                    });
+                });
+            });
 
         </script>
     </body>

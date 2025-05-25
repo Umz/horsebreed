@@ -18,13 +18,42 @@
     transform: translateY(-50%);
 
     color: #fff;
-    pointer-events: none;
     border: 1px solid #fff;
+    pointer-events: none;
 }
 
 .cols {
     display: flex;
     flex-direction: column;
+}
+
+.centerblock {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.infoblock {
+    margin: auto;
+    width: 70vw;
+    padding: 2rem;
+    border-radius: 12px;
+    background-color: rgba(0, 0, 0, .3);
+    font-size: 1.25rem;
+    font-family: "Silkscreen", sans-serif;
+    text-shadow: 1px 1px 0 #000;
+}
+
+.infoblock h3 {
+    margin-bottom: .5rem;
+    -webkit-text-stroke: 1px brown;
+}
+.infoblock p {
+    margin-bottom: .5rem;
+}
+
+fieldset {
+    border-radius: 12px;
+    padding: 12px;
 }
 
 /* z-indexing */
@@ -44,7 +73,7 @@
 /* Main Menu -------------------------------------- */
 
 .menu-logo {
-    margin: 0 auto;
+    margin: 0 auto 3rem;
     width: 20rem;
     image-rendering: pixelated;
 }
@@ -63,11 +92,60 @@
     margin: 0 auto;
 
     font-weight: 900;
+    font-size: 2.5rem;
+    font-family: "Silkscreen", sans-serif;
+
+    color: white;
+    -webkit-text-stroke: 1px brown;
+    text-shadow: 1px 4px 0 black;
+
+    pointer-events: all;
+}
+.main-menu-button:hover {
+    color: burlywood;
+}
+.main-menu-button:active {
+    color: brown;
+}
+.main-menu-button:focus {
+    color: burlywood;
+}
+
+.menu-back-button {
+    border: none;
+    width: fit-content;
+    background: none;
+    margin: 0 auto;
+
+    font-weight: 900;
     font-size: 2rem;
     font-family: "Silkscreen", sans-serif;
 
     color: white;
-    text-shadow: 1px 4px 0 #000;
+    -webkit-text-stroke: 1px brown;
+    text-shadow: 1px 4px 0 black;
+
+    pointer-events: all;
+}
+.menu-back-button:hover { color: burlywood }
+.menu-back-button:active { color: brown }
+.menu-back-button:focus { color: burlywood }
+
+.credit-link {
+    color: yellow;
+    font-size: 1rem;
+}
+
+.breeding-table {
+    table-layout: fixed;
+    width: 100%;
+    overflow: hidden;
+    border-spacing: 10px;
+}
+.breeding-table td {
+    border: 2px solid white;
+    height: 20px;
+    overflow: hidden;
 }
 
 /* Stats */
