@@ -1,3 +1,6 @@
+import HorseState from "../consts/HorseState.js"
+import Sfx from "../consts/Sfx.js";
+
 let UID = 1;
 
 export class Horse extends Phaser.Physics.Arcade.Sprite {
@@ -9,11 +12,13 @@ export class Horse extends Phaser.Physics.Arcade.Sprite {
 
         this.uid = UID ++;
 
-        const maxTame = horseType.level * 10;
-        this.tame = Phaser.Math.Between(maxTame - 10, maxTame);
+        const maxTame = horseType.level * 5;
+        this.tame = Math.max(1, Phaser.Math.Between(maxTame - 10, maxTame));
         this.horseName = horseType.name;
-        this.calm = Phaser.Math.Between(45, 60);
+        this.calm = Phaser.Math.Between(5, 20);
         this.sex =  Phaser.Math.Between(1, 2);
+
+        this.state = HorseState.WILD;
 
         this.type = horseType;
         this.colNum = horseType.sheet;
@@ -30,30 +35,77 @@ export class Horse extends Phaser.Physics.Arcade.Sprite {
     }
 
     update(_, delta) {
-        const currentVelocityX = this.body.velocity.x;
+
+        this.setDepth(this.getBottomCenter().y);
+
+        const velocityX = this.body.velocity.x;
 
         if (!this.isTweeningFlip) {
-            if (currentVelocityX < 0 && this.flipX) {
+            if (velocityX < 0 && this.flipX) {
                 this.startFlipTween(false); // Moving left, currently facing right
-            } else if (currentVelocityX > 0 && !this.flipX) {
+            } else if (velocityX > 0 && !this.flipX) {
                 this.startFlipTween(true);  // Moving right, currently facing left
             }
         }
 
-        this.setDepth(this.getBottomCenter().y);
+        //  State switching
+        const speed = Math.abs(this.body.velocity.x);
+        if (speed < 64 && speed > 0) {
+
+            this.calm = Math.max(0, this.calm - (delta * .001) * 2);
+
+            // CALM
+            this.pacing();
+
+            if (this.calm <= 0) {
+                this.escaping();
+                this.scene.sound.play(Sfx.FLEE, {volume:.3});
+            }
+        }
 
         // Check if the horse has moved off-screen
-        if (this.x < -this.width / 2) {
-            this.x = this.scene.scale.width + this.width / 2;
-        } else if (this.x > this.scene.scale.width + this.width / 2) {
-            this.x = -this.width / 2;
+        if ((this.x < -this.width / 2) && velocityX < 0) {
+            this.destroy(true);
+        } else if ((this.x > this.scene.scale.width + this.width / 2) && velocityX > 0) {
+            this.destroy(true);
         }
     }
 
-    setDragging() {
+    pacing() {
+
+        const min = this.scene.scale.width * .35;
+        const max = this.scene.scale.width * .85;
+        const velX = this.body.velocity.x;
+
+        if (this.x >= max && velX > 0) {
+            this.setVelocityX(velX * -1);
+        }
+        else if (this.x <= min && velX < 0) {
+            this.setVelocityX(velX * -1);
+        }
     }
 
-    stopDrag() {
+    escaping() {
+        const speed = Math.abs(this.body.velocity.x);
+        if (speed < 64) {
+            this.body.velocity.x *= 5;
+            this.playRun();
+        }
+    }
+
+    getShadowColour() {
+        const calm = this.calm;
+        if (calm >= 0 && calm <= 20) {
+            return {col: 0x000000, alpha: .3};
+        } else if (calm > 20 && calm <= 40) {
+            return {col: 0x888888, alpha: .4};
+        } else if (calm > 40 && calm <= 60) {
+            return {col: 0x0D78F1, alpha: .5};
+        } else if (calm > 60 && calm <= 80) {
+            return {col: 0xCE1616, alpha: .6};
+        } else {
+            return {col: 0xDF0DDF, alpha: .7};
+        }
     }
 
     getCalmState() {

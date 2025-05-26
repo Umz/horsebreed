@@ -1,3 +1,5 @@
+import Sfx from "../consts/Sfx.js";
+
 export class Preload extends Phaser.Scene {
 
     constructor() {
@@ -5,6 +7,11 @@ export class Preload extends Phaser.Scene {
     }
 
     preload() {
+
+        const sounds = Object.values(Sfx);
+        for (let sfx of sounds) {
+            this.load.audio(sfx, `assets/${sfx}.mp3`);
+        }
 
         this.load.image('ground', 'assets/ground.png');
         this.load.image('moon', 'assets/moon.png');
@@ -18,9 +25,12 @@ export class Preload extends Phaser.Scene {
             frameWidth: 60,
             frameHeight: 33
         });
+
     }
 
     create() {
+
+        this.createGraphics();
         
         // Get the textures from the texture manager
         const paletteTexture = this.textures.get('palette');
@@ -106,7 +116,7 @@ export class Preload extends Phaser.Scene {
             }
             const newTexturePixels = newTextureData.data;
 
-            console.log(`Processing column ${col} for texture ${newTextureKey}`);
+            //console.log(`Processing column ${col} for texture ${newTextureKey}`);
 
             // --- Perform Color Replacement on the full spritesheet ---
             for (let i = 0; i < paletteRows; i++) {
@@ -153,7 +163,7 @@ export class Preload extends Phaser.Scene {
                 // cutX/Y/Width/Height define the frame's area within the texture's source image
                 newTexture.add(frame.name, 0, frame.cutX, frame.cutY, frame.cutWidth, frame.cutHeight);
             }
-            console.log(`Added ${newTexture.getFrameNames().length -1} frames to texture: ${newTextureKey}`); // -1 to exclude __BASE
+            //console.log(`Added ${newTexture.getFrameNames().length -1} frames to texture: ${newTextureKey}`); // -1 to exclude __BASE
 
             // --- Define Animations for the new spritesheet ---
             // This should now work because the frames have been added to newTexture
@@ -166,7 +176,7 @@ export class Preload extends Phaser.Scene {
                 frameRate: frameRate,
                 repeat: -1
             });
-             console.log(`Created animation: ${newTextureKey}-run`);
+            //console.log(`Created animation: ${newTextureKey}-run`);
 
             // Define 'walk' animation (frames 8-15)
             this.anims.create({
@@ -175,15 +185,14 @@ export class Preload extends Phaser.Scene {
                 frameRate: frameRate - 3,
                 repeat: -1
             });
-            console.log(`Created animation: ${newTextureKey}-walk`);
-
+            //console.log(`Created animation: ${newTextureKey}-walk`);
 
         } // End of column loop
 
         // --- Cleanup Temporary Canvas ---
         tempPaletteCanvas.remove();
 
-        console.log('Finished generating recolored horse textures and animations.');
+        //console.log('Finished generating recolored horse textures and animations.');
 
         // Example: How to create a sprite and play an animation
         /*
@@ -205,7 +214,91 @@ export class Preload extends Phaser.Scene {
         this.scene.start('Game');
     }
 
-    update() {
-        // The update loop is typically used for game logic that runs every frame
+    createGraphics() {
+
+        const graphics = this.add.graphics();
+        function addLoveHeart(textureName = "heart") {
+
+            graphics.clear();
+            graphics.fillStyle(0xFF0000);
+            graphics.lineStyle(1, 0xFFFFFF);
+            graphics.beginPath();
+
+            // Define the points for a simplified 8x8 pixel heart shape
+            // (x, y) coordinates within the 8x8 grid
+            graphics.moveTo(4, 8); // Bottom center point
+            graphics.lineTo(0, 4); // Bottom-left lobe point
+            graphics.lineTo(0, 2); // Mid-left point
+            graphics.lineTo(2, 0); // Top-left point
+            graphics.lineTo(4, 0); // Top-center point
+            graphics.lineTo(6, 0); // Top-right point
+            graphics.lineTo(8, 2); // Mid-right point
+            graphics.lineTo(8, 4); // Bottom-right lobe point
+            graphics.lineTo(4, 8); // Close the path back to the starting point
+
+            graphics.closePath();
+
+            graphics.fill();
+            graphics.stroke();
+
+            graphics.generateTexture(textureName, 8, 8);
+        }
+
+        function addStar(textureName = "star") {
+            graphics.clear();
+            graphics.fillStyle(0xFFFF00); // Yellow fill color
+            graphics.lineStyle(1, 0xFFFFFF); // White outline
+
+            // Define points for a 5-pointed star within a 10x10 square
+            // The coordinates are relative to the drawing area (0,0 to 10,10)
+            const centerX = 5;
+            const centerY = 5;
+            const outerRadius = 5;
+            const innerRadius = 2; // Adjust for pointiness
+
+            graphics.beginPath();
+
+            for (let i = 0; i < 5; i++) {
+                const angle = (i * Math.PI * 2) / 5; // Angle for outer points
+                const xOuter = centerX + outerRadius * Math.sin(angle);
+                const yOuter = centerY - outerRadius * Math.cos(angle); // Y-axis inverted for canvas
+
+                const nextAngle = ((i + 0.5) * Math.PI * 2) / 5; // Angle for inner points
+                const xInner = centerX + innerRadius * Math.sin(nextAngle);
+                const yInner = centerY - innerRadius * Math.cos(nextAngle);
+
+                if (i === 0) {
+                    graphics.moveTo(xOuter, yOuter);
+                } else {
+                    graphics.lineTo(xOuter, yOuter);
+                }
+                graphics.lineTo(xInner, yInner);
+            }
+            graphics.closePath();
+            graphics.fill();
+            graphics.stroke();
+            graphics.generateTexture(textureName, 10, 10); // Generate 10x10 texture
+        }
+
+        function addRedPixel(textureName = "redPixel") {
+            graphics.clear();
+            graphics.fillStyle(0xFF0000); // Red fill color
+            graphics.fillRect(0, 0, 2, 2); // Draw a 2x2 red square (a "pixel")
+            graphics.generateTexture(textureName, 2, 2); // Generate a 2x2 texture
+            graphics.setVisible(false);
+        }
+
+        function addDustParticle(textureName = "dustParticle") {
+            graphics.clear();
+            graphics.fillStyle(0xD2B48C); // Light brown/tan color for dust
+            graphics.fillCircle(1, 1, 1); // Draw a tiny circle (2x2 pixel area)
+            graphics.generateTexture(textureName, 2, 2); // Generate a 2x2 texture
+            graphics.setVisible(false);
+        }
+
+        addStar();
+        addLoveHeart();
+        addRedPixel();
+        addDustParticle();
     }
 }

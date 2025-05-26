@@ -81,7 +81,8 @@ export class CloudySky {
     }
 
     spawnLow() {
-        this.spawnCloud(260, 320, 10, 20, 320, .85);
+        const depth = Phaser.Utils.Array.GetRandom([1, 320]);
+        this.spawnCloud(260, 320, 10, 20, depth, .85);
     }
 
     update() {
