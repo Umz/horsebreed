@@ -1,7 +1,3 @@
-Main menu
-Pause menu
-Add full sounds (pause, start, UI sounds)
 Enter breeder name
 Enter ranch name
-
 Code cleanup

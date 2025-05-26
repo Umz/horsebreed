@@ -223,6 +223,35 @@ export class Game extends Phaser.Scene {
         });
 
         this.spawnFeed();
+
+        //  --- FLOW
+
+        // Get references to the DOM buttons
+        const pauseButton = document.getElementById('pause-button');
+        const resumeButton = document.getElementById('menu-play-button');
+
+        // Check if buttons exist before adding listeners
+        if (pauseButton) {
+            pauseButton.addEventListener('click', () => {
+                // Pause the current scene
+                this.scene.pause();
+                // Optional: Disable pause button and enable resume button
+                pauseButton.disabled = true;
+                if (resumeButton) resumeButton.disabled = false;
+            });
+        }
+
+        if (resumeButton) {
+            resumeButton.addEventListener('click', () => {
+                // Resume the current scene
+                this.scene.resume();
+                // Optional: Disable resume button and enable pause button
+                resumeButton.disabled = true;
+                if (pauseButton) pauseButton.disabled = false;
+            });
+        }
+
+        this.scene.pause();
     }
 
     update(_, delta) {
@@ -449,7 +478,7 @@ export class Game extends Phaser.Scene {
 
     isReqTameness(h1, h2, tameLv) {
         const max = Math.max(h1, h2);
-        console.log("is tame enough", h1, h2, tameLv, (tameLv >= max * 10))
+        //console.log("is tame enough", h1, h2, tameLv, (tameLv >= max * 10))
         return (tameLv >= max * 10);
     }
 

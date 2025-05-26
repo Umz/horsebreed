@@ -116,7 +116,7 @@ export class Preload extends Phaser.Scene {
             }
             const newTexturePixels = newTextureData.data;
 
-            console.log(`Processing column ${col} for texture ${newTextureKey}`);
+            //console.log(`Processing column ${col} for texture ${newTextureKey}`);
 
             // --- Perform Color Replacement on the full spritesheet ---
             for (let i = 0; i < paletteRows; i++) {
@@ -163,7 +163,7 @@ export class Preload extends Phaser.Scene {
                 // cutX/Y/Width/Height define the frame's area within the texture's source image
                 newTexture.add(frame.name, 0, frame.cutX, frame.cutY, frame.cutWidth, frame.cutHeight);
             }
-            console.log(`Added ${newTexture.getFrameNames().length -1} frames to texture: ${newTextureKey}`); // -1 to exclude __BASE
+            //console.log(`Added ${newTexture.getFrameNames().length -1} frames to texture: ${newTextureKey}`); // -1 to exclude __BASE
 
             // --- Define Animations for the new spritesheet ---
             // This should now work because the frames have been added to newTexture
@@ -176,7 +176,7 @@ export class Preload extends Phaser.Scene {
                 frameRate: frameRate,
                 repeat: -1
             });
-             console.log(`Created animation: ${newTextureKey}-run`);
+            //console.log(`Created animation: ${newTextureKey}-run`);
 
             // Define 'walk' animation (frames 8-15)
             this.anims.create({
@@ -185,15 +185,14 @@ export class Preload extends Phaser.Scene {
                 frameRate: frameRate - 3,
                 repeat: -1
             });
-            console.log(`Created animation: ${newTextureKey}-walk`);
-
+            //console.log(`Created animation: ${newTextureKey}-walk`);
 
         } // End of column loop
 
         // --- Cleanup Temporary Canvas ---
         tempPaletteCanvas.remove();
 
-        console.log('Finished generating recolored horse textures and animations.');
+        //console.log('Finished generating recolored horse textures and animations.');
 
         // Example: How to create a sprite and play an animation
         /*
